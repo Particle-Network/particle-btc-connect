@@ -1,0 +1,11 @@
+.github
+.parcel-cache
+.next
+
+build
+dist
+docs
+lib
+out
+*.svg
+

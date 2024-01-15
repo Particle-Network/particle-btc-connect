@@ -1,0 +1,67 @@
+{
+  "name": "@particle-network/btc-connectkit",
+  "version": "1.0.0",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "esm/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "esm"
+  ],
+  "author": "Particle Network",
+  "homepage": "https://particle.network",
+  "publishConfig": {
+    "access": "public"
+  },
+  "browserslist": [
+    "> 0.1%",
+    "last 2 versions",
+    "ie>=9"
+  ],
+  "keywords": [
+    "btc",
+    "connect",
+    "bitcoin",
+    "wallet",
+    "connectkit",
+    "mpc",
+    "particle"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "echo '{ \"type\": \"commonjs\" }' > dist/package.json && node esBuild.js",
+    "build:watch": "yarn build --watch",
+    "clean": "rm -rf dist && rm -rf esm",
+    "dev": "yarn clean && NODE_ENV=development yarn build:watch & NODE_ENV=development yarn typegen:watch",
+    "prepare": "MINIFY_CSS=true yarn build",
+    "prebuild": "yarn typegen",
+    "typecheck": "yarn tsc --noEmit",
+    "typegen": "tsc --emitDeclarationOnly || true",
+    "typegen:watch": "tsc --emitDeclarationOnly --watch"
+  },
+  "dependencies": {
+    "@ethereumjs/util": "^9.0.1",
+    "@particle-network/aa": "^1.3.3",
+    "@particle-network/chains": "^1.3.4",
+    "@particle-network/wallet": "^1.3.2",
+    "bitcore-lib": "^10.0.23",
+    "sats-connect": "^1.1.2",
+    "viem": "^2.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "esbuild-css-modules-plugin": "^3.1.0",
+    "esbuild-sass-plugin": "^2.16.1",
+    "esbuild-scss-modules-plugin": "^1.1.1",
+    "react": "^18",
+    "react-dom": "^18",
+    "sass": "^1.69.7"
+  },
+  "peerDependencies": {
+    "react": ">=17.0.0"
+  }
+}

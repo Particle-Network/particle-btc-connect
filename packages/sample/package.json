@@ -1,0 +1,34 @@
+{
+  "name": "sample",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "env-cmd -f .env.development.local --fallback next dev -p 3098",
+    "build": "env-cmd -f .env.production.local --fallback next build",
+    "build:development": "env-cmd -f .env.development.local --fallback next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@nextui-org/react": "^2.2.9",
+    "@particle-network/btc-connectkit": "^1.0.0",
+    "ahooks": "^3.7.8",
+    "framer-motion": "^10.17.9",
+    "next": "14.0.4",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-toastify": "^9.1.3",
+    "viem": "^2.0.3",
+    "zustand": "^4.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.0.1",
+    "eslint": "^8",
+    "eslint-config-next": "14.0.4",
+    "postcss": "^8",
+    "tailwindcss": "^3.3.0"
+  }
+}
