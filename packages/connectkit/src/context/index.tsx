@@ -55,7 +55,7 @@ export const ConnectProvider = ({
   useEffect(() => {
     const id = localStorage.getItem('current-connector-id');
     if (autoConnect && id) {
-      setConnectorId(id);
+      setTimeout(() => setConnectorId(id), 5);
     }
   }, [autoConnect]);
 
