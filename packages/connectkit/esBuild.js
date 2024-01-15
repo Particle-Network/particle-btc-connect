@@ -20,7 +20,7 @@ const buildConfig = {
   drop: process.env.NODE_ENV !== 'development' ? ['console', 'debugger'] : [],
   plugins: [
     replace({
-      include: /src\/utils\/common.ts$/,
+      include: /src\/index.ts$/,
       values: {
         __buildVersion: process.env.npm_package_version,
       },
