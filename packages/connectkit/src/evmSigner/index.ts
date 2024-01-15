@@ -61,6 +61,9 @@ export class AASignerProvider {
       const message = arg.params?.[0];
       const result = await this.personalSign(message || '');
       const convertResult = convertSignature(result);
+      if (!convertResult) {
+        throw new Error('sign error');
+      }
       return convertResult;
     } else if (arg.method === 'wallet_switchEthereumChain') {
       if (arg.params && arg.params instanceof Array && arg.params[0] && arg.params[0].chainId) {
