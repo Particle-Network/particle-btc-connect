@@ -55,7 +55,7 @@ export const ConnectProvider = ({
   useEffect(() => {
     const id = localStorage.getItem('current-connector-id');
     if (autoConnect && id) {
-      setTimeout(() => setConnectorId(id), 5);
+      setConnectorId(id);
     }
   }, [autoConnect]);
 
@@ -190,8 +190,11 @@ export const ConnectProvider = ({
 
   const disconnect = useCallback(() => {
     localStorage.removeItem('current-connector-id');
+    if (connector) {
+      connector.disconnect();
+    }
     setConnectorId(undefined);
-  }, []);
+  }, [connector]);
 
   useEffect(() => {
     const supportChains = evmSupportChainIds.map((id) => chains.getEVMChainInfoById(id));

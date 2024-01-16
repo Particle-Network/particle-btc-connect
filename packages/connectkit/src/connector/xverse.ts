@@ -185,4 +185,9 @@ export class XverseConnector extends BaseConnector {
     });
     return result;
   }
+
+  disconnect(): void {
+    localStorage.removeItem('btc-connect-xverse-addresses-Mainnet');
+    localStorage.removeItem('btc-connect-xverse-addresses-Testnet');
+  }
 }

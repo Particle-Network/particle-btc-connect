@@ -27,7 +27,10 @@ export abstract class InjectedConnector extends BaseConnector {
     if (!provider) {
       throw new Error(`${this.metadata.name} is not install!`);
     }
-    return provider.requestAccounts();
+    const accounts = await provider.requestAccounts();
+    const key = `${this.metadata.id}-request-accounts`;
+    localStorage.setItem(key, JSON.stringify(accounts));
+    return accounts;
   }
 
   async getAccounts(): Promise<string[]> {
@@ -35,7 +38,15 @@ export abstract class InjectedConnector extends BaseConnector {
     if (!provider) {
       throw new Error(`${this.metadata.name} is not install!`);
     }
-    return provider.getAccounts();
+    let accounts = await provider.getAccounts();
+    if (accounts.length === 0) {
+      const key = `${this.metadata.id}-request-accounts`;
+      const local = localStorage.getItem(key);
+      if (local) {
+        accounts = JSON.parse(local);
+      }
+    }
+    return accounts;
   }
   async getPublicKey(): Promise<string> {
     const provider = this.getProvider();
@@ -102,5 +113,10 @@ export abstract class InjectedConnector extends BaseConnector {
       throw new Error(`${this.metadata.name} is not install!`);
     }
     return provider.sendBitcoin(toAddress, satoshis, options);
+  }
+
+  disconnect() {
+    const key = `${this.metadata.id}-request-accounts`;
+    localStorage.removeItem(key);
   }
 }
