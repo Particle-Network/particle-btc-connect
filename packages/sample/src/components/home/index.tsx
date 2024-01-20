@@ -83,9 +83,14 @@ export default function Home() {
       if (!smartAccount) {
         throw new Error('Please connect wallet first!');
       }
+      const balance = await smartAccount.provider.request({
+          method: 'eth_getBalance',
+          params: [await smartAccount.getAddress(), "latest"]
+      });
+      const value = BigInt(balance) > 100000000n ? '100000000' : '0';
       const tx = {
         to: '0xe8fc0baE43aA264064199dd494d0f6630E692e73',
-        value: '100000000000',
+        value,
         data: '0x',
       };
       const feeQuotes = await smartAccount.getFeeQuotes(tx);
@@ -121,7 +126,7 @@ export default function Home() {
         BTC Connect
       </div>
 
-      <div className=" -skew-x-6">First Account Abstraction Protocol on Bitcoin</div>
+      <div className=" -skew-x-6">The First Account Abstraction Protocol on Bitcoin</div>
 
       <div className="absolute right-4 top-4">
         {accounts.length === 0 && (
@@ -131,7 +136,7 @@ export default function Home() {
         )}
         {accounts.length !== 0 && (
           <Button color="primary" onClick={disconnect}>
-            Disonnect
+            Disconnect
           </Button>
         )}
       </div>
@@ -139,7 +144,7 @@ export default function Home() {
       <div className="mt-12 flex h-auto w-[40rem] max-w-full flex-col gap-4 rounded-lg p-4 shadow-md">
         <div className="mb-4 text-2xl font-bold">Bitcoin</div>
 
-        <div className="overflow-hidden text-ellipsis whitespace-nowrap">Addresses: {JSON.stringify(accounts)}</div>
+        <div className="overflow-hidden text-ellipsis whitespace-nowrap">Addresses: {accounts.join(', ')}</div>
 
         <Button color="primary" onClick={onGetNetwork}>
           Get Network
