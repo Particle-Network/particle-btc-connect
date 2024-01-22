@@ -2,8 +2,14 @@
 
 import bitcoinIcon from '@/assets/bitcoin.png';
 import particleLogo from '@/assets/particle-logo.svg';
-import { Button, Checkbox, Select, SelectItem } from '@nextui-org/react';
-import { useAccounts, useBTCProvider, useConnectModal, useETHProvider } from '@particle-network/btc-connectkit';
+import { Button, Checkbox, Divider, Input, Select, SelectItem } from '@nextui-org/react';
+import {
+  useAccounts,
+  useBTCProvider,
+  useConnectModal,
+  useConnector,
+  useETHProvider,
+} from '@particle-network/btc-connectkit';
 import { chains } from '@particle-network/chains';
 import { useRequest } from 'ahooks';
 import Image from 'next/image';
@@ -14,8 +20,11 @@ export default function Home() {
   const { openConnectModal, disconnect } = useConnectModal();
   const { accounts } = useAccounts();
   const { evmAccount, smartAccount, chainId, switchChain } = useETHProvider();
-  const { getNetwork, switchNetwork, signMessage, getPublicKey, sendBitcoin } = useBTCProvider();
+  const { provider, getNetwork, switchNetwork, signMessage, getPublicKey, sendBitcoin } = useBTCProvider();
+  const { connector } = useConnector();
   const [gasless, setGasless] = useState<boolean>(false);
+  const [inscriptionReceiverAddress, setInscriptionReceiverAddress] = useState<string>();
+  const [inscriptionId, setInscriptionId] = useState<string>();
 
   const onGetNetwork = async () => {
     try {
@@ -64,6 +73,25 @@ export default function Home() {
       toast.success(txId);
     } catch (error: any) {
       toast.error(error.message || 'send bitcoin error');
+    }
+  };
+
+  const onSendInscription = async () => {
+    if (!inscriptionReceiverAddress || !inscriptionId || !provider) {
+      return;
+    }
+    let txId;
+    try {
+      const result = await provider.sendInscription(inscriptionReceiverAddress, inscriptionId);
+      if (typeof result === 'string') {
+        txId = result;
+      } else {
+        txId = result.txid;
+      }
+      console.log('send inscription success, txid:', txId);
+      toast.success(`send success \n${txId}`);
+    } catch (error: any) {
+      toast.error(error.message || 'send inscription error');
     }
   };
 
@@ -164,6 +192,20 @@ export default function Home() {
         <Button color="primary" onClick={onSendBitcoin}>
           Send Bitcoin
         </Button>
+        {connector?.metadata.id && connector.metadata.id !== 'xverse' && (
+          <div className="flex flex-col gap-4">
+            <Divider></Divider>
+            <Input
+              label="Receiver Address"
+              value={inscriptionReceiverAddress}
+              onValueChange={setInscriptionReceiverAddress}
+            ></Input>
+            <Input label="Inscription ID" value={inscriptionId} onValueChange={setInscriptionId}></Input>
+            <Button color="primary" onClick={onSendInscription}>
+              Send Inscription
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="mt-20 flex h-auto w-[40rem] max-w-full flex-col gap-4 rounded-lg p-4 shadow-md">

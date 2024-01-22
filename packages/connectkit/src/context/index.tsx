@@ -10,6 +10,7 @@ import { AASignerProvider } from '../evmSigner';
 interface GlobalState {
   connectorId?: string;
   setConnectorId: (connectorId?: string) => void;
+  connector?: BaseConnector;
   openConnectModal: () => void;
   closeConnectModal: () => void;
   accounts: string[];
@@ -243,6 +244,7 @@ export const ConnectProvider = ({
       value={{
         connectorId,
         setConnectorId,
+        connector,
         openConnectModal: () => setOpenModal(true),
         closeConnectModal: () => setOpenModal(false),
         accounts,
@@ -276,6 +278,11 @@ export const useConnectModal = () => {
 export const useAccounts = () => {
   const { accounts } = useConnectProvider();
   return { accounts };
+};
+
+export const useConnector = () => {
+  const { connector } = useConnectProvider();
+  return { connector };
 };
 
 export const useBTCProvider = () => {
