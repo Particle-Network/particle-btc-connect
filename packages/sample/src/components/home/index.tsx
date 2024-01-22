@@ -84,8 +84,8 @@ export default function Home() {
         throw new Error('Please connect wallet first!');
       }
       const balance = await smartAccount.provider.request({
-          method: 'eth_getBalance',
-          params: [await smartAccount.getAddress(), "latest"]
+        method: 'eth_getBalance',
+        params: [await smartAccount.getAddress(), 'latest'],
       });
       const value = BigInt(balance) > 100000000n ? '100000000' : '0';
       const tx = {
