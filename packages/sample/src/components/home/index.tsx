@@ -20,7 +20,8 @@ export default function Home() {
   const { openConnectModal, disconnect } = useConnectModal();
   const { accounts } = useAccounts();
   const { evmAccount, smartAccount, chainId, switchChain } = useETHProvider();
-  const { provider, getNetwork, switchNetwork, signMessage, getPublicKey, sendBitcoin } = useBTCProvider();
+  const { provider, getNetwork, switchNetwork, signMessage, getPublicKey, sendBitcoin, sendInscription } =
+    useBTCProvider();
   const { connector } = useConnector();
   const [gasless, setGasless] = useState<boolean>(false);
   const [inscriptionReceiverAddress, setInscriptionReceiverAddress] = useState<string>();
@@ -80,14 +81,9 @@ export default function Home() {
     if (!inscriptionReceiverAddress || !inscriptionId || !provider) {
       return;
     }
-    let txId;
     try {
-      const result = await provider.sendInscription(inscriptionReceiverAddress, inscriptionId);
-      if (typeof result === 'string') {
-        txId = result;
-      } else {
-        txId = result.txid;
-      }
+      const result = await sendInscription(inscriptionReceiverAddress, inscriptionId);
+      const txId = result.txid;
       console.log('send inscription success, txid:', txId);
       toast.success(`send success \n${txId}`);
     } catch (error: any) {
@@ -192,7 +188,7 @@ export default function Home() {
         <Button color="primary" onClick={onSendBitcoin}>
           Send Bitcoin
         </Button>
-        {connector?.metadata.id && connector.metadata.id !== 'xverse' && (
+        {connector && (
           <div className="flex flex-col gap-4">
             <Divider></Divider>
             <Input

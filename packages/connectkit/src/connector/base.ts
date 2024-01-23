@@ -18,5 +18,10 @@ export abstract class BaseConnector {
   abstract getNetwork(): Promise<'livenet' | 'testnet'>;
   abstract switchNetwork(network: 'livenet' | 'testnet'): Promise<void>;
   abstract sendBitcoin(toAddress: string, satoshis: number, options?: { feeRate: number }): Promise<string>;
+  abstract sendInscription(
+    address: string,
+    inscriptionId: string,
+    options?: { feeRate: number }
+  ): Promise<{ txid: string }>;
   abstract disconnect(): void;
 }

@@ -2,9 +2,9 @@
 
 import {
   ConnectProvider as BTCConnectProvider,
+  BitgetConnector,
   OKXConnector,
   UnisatConnector,
-  XverseConnector,
 } from '@particle-network/btc-connectkit';
 
 if (typeof window !== 'undefined') {
@@ -29,7 +29,7 @@ export default function ConnectProvider({ children }: { children: React.ReactNod
           },
         },
       }}
-      connectors={[new UnisatConnector(), new OKXConnector(), new XverseConnector()]}
+      connectors={[new UnisatConnector(), new OKXConnector(), new BitgetConnector()]}
     >
       {children}
     </BTCConnectProvider>

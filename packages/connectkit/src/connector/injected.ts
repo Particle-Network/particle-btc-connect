@@ -115,6 +115,25 @@ export abstract class InjectedConnector extends BaseConnector {
     return provider.sendBitcoin(toAddress, satoshis, options);
   }
 
+  async sendInscription(
+    address: string,
+    inscriptionId: string,
+    options?: { feeRate: number }
+  ): Promise<{ txid: string }> {
+    const provider = this.getProvider();
+    if (!provider) {
+      throw new Error(`${this.metadata.name} is not install!`);
+    }
+    const result = await provider.sendInscription(address, inscriptionId, options);
+    if (typeof result === 'string') {
+      return {
+        txid: result,
+      };
+    }
+
+    return result;
+  }
+
   disconnect() {
     const key = `${this.metadata.id}-request-accounts`;
     localStorage.removeItem(key);
