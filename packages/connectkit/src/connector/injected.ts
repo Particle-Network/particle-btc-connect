@@ -28,8 +28,6 @@ export abstract class InjectedConnector extends BaseConnector {
       throw new Error(`${this.metadata.name} is not install!`);
     }
     const accounts = await provider.requestAccounts();
-    const key = `${this.metadata.id}-request-accounts`;
-    localStorage.setItem(key, JSON.stringify(accounts));
     return accounts;
   }
 
@@ -38,14 +36,7 @@ export abstract class InjectedConnector extends BaseConnector {
     if (!provider) {
       throw new Error(`${this.metadata.name} is not install!`);
     }
-    let accounts = await provider.getAccounts();
-    if (accounts.length === 0) {
-      const key = `${this.metadata.id}-request-accounts`;
-      const local = localStorage.getItem(key);
-      if (local) {
-        accounts = JSON.parse(local);
-      }
-    }
+    const accounts = await provider.getAccounts();
     return accounts;
   }
   async getPublicKey(): Promise<string> {
@@ -134,8 +125,5 @@ export abstract class InjectedConnector extends BaseConnector {
     return result;
   }
 
-  disconnect() {
-    const key = `${this.metadata.id}-request-accounts`;
-    localStorage.removeItem(key);
-  }
+  disconnect() {}
 }

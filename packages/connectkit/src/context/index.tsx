@@ -152,12 +152,13 @@ export const ConnectProvider = ({
         .then((res) => setEVMAccount(res))
         .catch((e) => {
           setEVMAccount(undefined);
+          console.error('smartAccount getAddress error', e);
           // ignore
         });
     } else {
       setEVMAccount(undefined);
     }
-  }, [accounts, (smartAccount?.provider as any)?.getPublicKey]);
+  }, [accounts, smartAccount]);
 
   useEffect(() => {
     if (connector) {
