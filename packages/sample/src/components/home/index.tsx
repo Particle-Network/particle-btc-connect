@@ -13,6 +13,7 @@ import {
 import { chains } from '@particle-network/chains';
 import { useRequest } from 'ahooks';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 
@@ -236,6 +237,8 @@ export default function Home() {
           </Checkbox>
         </div>
       </div>
+
+      <Link href="/others">Other</Link>
     </div>
   );
 }
