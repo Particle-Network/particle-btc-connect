@@ -28,6 +28,7 @@ export abstract class InjectedConnector extends BaseConnector {
       throw new Error(`${this.metadata.name} is not install!`);
     }
     const accounts = await provider.requestAccounts();
+    console.log('🚀 ~ InjectedConnector ~ requestAccounts ~ accounts:', accounts);
     return accounts;
   }
 

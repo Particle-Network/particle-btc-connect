@@ -160,19 +160,28 @@ export const ConnectProvider = ({
     }
   }, [accounts, smartAccount]);
 
+  const requestAccount = useCallback(
+    async (connector: BaseConnector) => {
+      let accounts = await connector.getAccounts();
+      console.log('requestAccount start, autoConnect', accounts, autoConnect);
+      if (accounts.length === 0 && autoConnect) {
+        accounts = await connector.requestAccounts();
+      }
+      setAccounts(accounts);
+    },
+    [autoConnect]
+  );
+
   useEffect(() => {
     if (connector) {
-      connector
-        .getAccounts()
-        .then((values) => setAccounts(values))
-        .catch((e: any) => {
-          console.log('get account error', e);
-          setAccounts([]);
-        });
+      requestAccount(connector).catch((e: any) => {
+        console.log('get account error', e);
+        setAccounts([]);
+      });
     } else {
       setAccounts([]);
     }
-  }, [connector]);
+  }, [connector, requestAccount]);
 
   useEffect(() => {
     const onAccountChange = (accounts: string[]) => {
