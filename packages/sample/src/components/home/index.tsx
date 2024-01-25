@@ -2,6 +2,7 @@
 
 import bitcoinIcon from '@/assets/bitcoin.png';
 import particleLogo from '@/assets/particle-logo.svg';
+import { accountContracts } from '@/config';
 import { Button, Checkbox, Divider, Input, Select, SelectItem } from '@nextui-org/react';
 import {
   useAccounts,
@@ -255,15 +256,14 @@ export default function Home() {
           onChange={onSwitchChain}
           isRequired
         >
-          <SelectItem key="686868" value={686868}>
-            Merlin Testnet
-          </SelectItem>
-          <SelectItem key="28206" value={28206}>
-            LumiBit Testnet
-          </SelectItem>
-          <SelectItem key="80001" value={80001}>
-            Polygon Mumbai
-          </SelectItem>
+          {accountContracts.BTC[0].chainIds.map((chainId) => {
+            const chain = chains.getEVMChainInfoById(chainId)!;
+            return (
+              <SelectItem key={chain.id} value={chain.id}>
+                {chain.fullname}
+              </SelectItem>
+            );
+          })}
         </Select>
 
         <div className="felx w-full items-center">

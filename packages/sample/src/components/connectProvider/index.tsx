@@ -1,5 +1,6 @@
 'use client';
 
+import { accountContracts } from '@/config';
 import {
   ConnectProvider as BTCConnectProvider,
   BitgetConnector,
@@ -19,14 +20,7 @@ export default function ConnectProvider({ children }: { children: React.ReactNod
         clientKey: process.env.NEXT_PUBLIC_CLIENT_KEY as string,
         appId: process.env.NEXT_PUBLIC_APP_ID as string,
         aaOptions: {
-          accountContracts: {
-            BTC: [
-              {
-                chainIds: [686868, 28206, 80001],
-                version: '1.0.0',
-              },
-            ],
-          },
+          accountContracts,
         },
       }}
       connectors={[new UnisatConnector(), new OKXConnector(), new BitgetConnector()]}

@@ -1638,10 +1638,10 @@
     axios "^1.3.6"
     uuid "^8.3.2"
 
-"@particle-network/chains@^1.3.4":
-  version "1.3.4"
-  resolved "https://registry.yarnpkg.com/@particle-network/chains/-/chains-1.3.4.tgz#f21bca46f2d79ba622c3253ef2509525d828736c"
-  integrity sha512-MoVv9EcFiwq9O/aH3WDL7acB68qW1O8P7sgK6pGmsDMAXNbs2RzdGJsIgNd9ZmBxRg+W8qK2ptiGAWpuqhg3pA==
+"@particle-network/chains@^1.3.9":
+  version "1.3.9"
+  resolved "https://registry.yarnpkg.com/@particle-network/chains/-/chains-1.3.9.tgz#68e87c52e07b718529b96f1122bbca1bf4a10bf3"
+  integrity sha512-u9fwm13J/q1GyjwQrzsiJx+nxDfcPYPXBvOL5l6Luq5cpdmi4g3bXyUq5YGSt/eI5lbzUzXTLvXxFxh7QgEWGg==
 
 "@particle-network/wallet@^1.3.2":
   version "1.3.2"
