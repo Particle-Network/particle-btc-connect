@@ -2,6 +2,7 @@ export interface WalletMetadata {
   id: string;
   name: string;
   icon: string;
+  downloadUrl: string;
 }
 
 export abstract class BaseConnector {

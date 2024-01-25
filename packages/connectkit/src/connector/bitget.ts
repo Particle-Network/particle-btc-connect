@@ -7,6 +7,7 @@ export class BitgetConnector extends InjectedConnector {
     id: 'bitget',
     name: 'Bitget Wallet',
     icon,
+    downloadUrl: 'https://web3.bitget.com/en/wallet-download',
   };
 
   constructor() {

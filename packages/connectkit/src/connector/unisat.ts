@@ -7,6 +7,7 @@ export class UnisatConnector extends InjectedConnector {
     id: 'unisat',
     name: 'Unisat Wallet',
     icon,
+    downloadUrl: 'https://unisat.io',
   };
 
   constructor() {

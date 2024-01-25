@@ -7,6 +7,7 @@ export class OKXConnector extends InjectedConnector {
     id: 'okx',
     name: 'OKX Wallet',
     icon,
+    downloadUrl: 'https://www.okx.com/download',
   };
   constructor() {
     super('okxwallet.bitcoin');

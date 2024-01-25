@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { type BaseConnector } from '../../connector/base';
-import { useConnectProvider } from '../../context';
+import { useConnectProvider, useConnector } from '../../context';
 import back from '../../icons/back.svg';
 import close from '../../icons/close.svg';
 import retryIcon from '../../icons/retry.svg';
@@ -9,29 +9,33 @@ import styles from './index.module.scss';
 const ConnectModal = ({ connectors }: { connectors: BaseConnector[] }) => {
   const [backVisible, setBackVisible] = useState(false);
   const [retryVisible, setRetryVisible] = useState(false);
+  const [walletReady, setWalletReady] = useState(true);
   const [selectConnector, setSelectConnector] = useState<BaseConnector>();
-  const { closeConnectModal, setConnectorId } = useConnectProvider();
+  const { closeConnectModal } = useConnectProvider();
+  const { connect } = useConnector();
 
   const onConnect = async (connector: BaseConnector) => {
     setBackVisible(true);
     setSelectConnector(connector);
-    try {
-      const accounts = await connector.requestAccounts();
-      if (accounts.length > 0) {
-        localStorage.setItem('current-connector-id', connector.metadata.id);
-        setConnectorId(connector.metadata.id);
+    if (connector.isReady()) {
+      try {
+        await connect(connector.metadata.id);
+        closeConnectModal();
+      } catch (error: any) {
+        console.error('onConnect error', error);
+        if (error.code === 4001) {
+          setRetryVisible(true);
+        }
       }
-      closeConnectModal();
-    } catch (error: any) {
-      console.error('onConnect error', error);
-      if (error.code === 4001) {
-        setRetryVisible(true);
-      }
+    } else {
+      setWalletReady(false);
     }
   };
 
   const onBack = () => {
     setBackVisible(false);
+    setRetryVisible(false);
+    setWalletReady(true);
     setSelectConnector(undefined);
   };
 
@@ -74,12 +78,28 @@ const ConnectModal = ({ connectors }: { connectors: BaseConnector[] }) => {
               )}
             </div>
 
-            <div className={styles.connection}>{retryVisible ? 'Request Cancelled' : 'Requesting Connection'}</div>
-            <div className={styles.acceptRequest}>
-              {retryVisible
-                ? 'You cancelled the request.\nClick above to try again.'
-                : 'Accept the request through your wallet to connect to this app.'}
-            </div>
+            {walletReady ? (
+              <>
+                <div className={styles.connection}>{retryVisible ? 'Request Cancelled' : 'Requesting Connection'}</div>
+                <div className={styles.acceptRequest}>
+                  {retryVisible
+                    ? 'You cancelled the request.\nClick above to try again.'
+                    : 'Accept the request through your wallet to connect to this app.'}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className={styles.connection}>Wallet Not Installed.</div>
+                <button
+                  className={styles.btnDownload}
+                  onClick={() => {
+                    window.open(selectConnector?.metadata.downloadUrl, '_blank');
+                  }}
+                >
+                  Get
+                </button>
+              </>
+            )}
           </div>
         )}
       </div>

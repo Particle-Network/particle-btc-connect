@@ -119,6 +119,16 @@
         white-space: pre-wrap;
         color: rgba(255, 255, 255, 0.4);
       }
+      .btnDownload {
+        border-radius: 8px;
+        border: 1px solid #3a3a3a;
+        padding: 6px 30px;
+        margin-top: 20px;
+        font-size: 16px;
+        &:hover {
+          background: hsla(0, 0%, 100%, 0.05);
+        }
+      }
     }
   }
 }

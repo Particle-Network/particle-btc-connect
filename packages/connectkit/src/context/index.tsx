@@ -11,6 +11,7 @@ interface GlobalState {
   connectorId?: string;
   setConnectorId: (connectorId?: string) => void;
   connector?: BaseConnector;
+  connectors: BaseConnector[];
   openConnectModal: () => void;
   closeConnectModal: () => void;
   accounts: string[];
@@ -259,6 +260,7 @@ export const ConnectProvider = ({
         connectorId,
         setConnectorId,
         connector,
+        connectors,
         openConnectModal: () => setOpenModal(true),
         closeConnectModal: () => setOpenModal(false),
         accounts,
@@ -295,8 +297,24 @@ export const useAccounts = () => {
 };
 
 export const useConnector = () => {
-  const { connector } = useConnectProvider();
-  return { connector };
+  const { connectors, setConnectorId } = useConnectProvider();
+
+  const connect = useCallback(
+    async (connectorId: string) => {
+      const connector = connectors.find((item) => item.metadata.id === connectorId);
+      if (!connector) {
+        throw new Error(`connector id ${connectorId} not found`);
+      }
+      const accounts = await connector.requestAccounts();
+      if (accounts.length > 0) {
+        localStorage.setItem('current-connector-id', connector.metadata.id);
+        setConnectorId(connector.metadata.id);
+      }
+    },
+    [connectors, setConnectorId]
+  );
+
+  return { connectors, connect };
 };
 
 export const useBTCProvider = () => {

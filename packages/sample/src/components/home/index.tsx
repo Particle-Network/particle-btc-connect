@@ -13,7 +13,6 @@ import {
 import { chains } from '@particle-network/chains';
 import { useRequest } from 'ahooks';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 
@@ -23,10 +22,13 @@ export default function Home() {
   const { evmAccount, smartAccount, chainId, switchChain } = useETHProvider();
   const { provider, getNetwork, switchNetwork, signMessage, getPublicKey, sendBitcoin, sendInscription } =
     useBTCProvider();
-  const { connector } = useConnector();
   const [gasless, setGasless] = useState<boolean>(false);
   const [inscriptionReceiverAddress, setInscriptionReceiverAddress] = useState<string>();
   const [inscriptionId, setInscriptionId] = useState<string>();
+  const [message, setMessage] = useState<string>('Hello, Particle!');
+  const [address, setAddress] = useState<string>();
+  const [satoshis, setSatoshis] = useState<string>('1');
+  const { connectors, connect } = useConnector();
 
   const onGetNetwork = async () => {
     try {
@@ -61,8 +63,11 @@ export default function Home() {
   };
 
   const onSignMessage = async () => {
+    if (!message) {
+      return;
+    }
     try {
-      const sig = await signMessage('Hello, Particle!');
+      const sig = await signMessage(message);
       toast.success(sig);
     } catch (error: any) {
       toast.error(error.message || 'sign message error');
@@ -70,8 +75,11 @@ export default function Home() {
   };
 
   const onSendBitcoin = async () => {
+    if (!address || !satoshis) {
+      return;
+    }
     try {
-      const txId = await sendBitcoin('bc1qng49rsnvndk8utk6ntz85jffmuch8l0akq6hpx', 1);
+      const txId = await sendBitcoin(address, Number(satoshis));
       toast.success(txId);
     } catch (error: any) {
       toast.error(error.message || 'send bitcoin error');
@@ -166,6 +174,29 @@ export default function Home() {
         )}
       </div>
 
+      {accounts.length === 0 && (
+        <>
+          <Divider></Divider>
+          <div className="mt-6 flex gap-8">
+            {connectors.map((connector) => {
+              return (
+                connector.isReady() && (
+                  <Image
+                    key={connector.metadata.id}
+                    src={connector.metadata.icon}
+                    alt={connector.metadata.name}
+                    width={50}
+                    height={50}
+                    className="cursor-pointer rounded-lg"
+                    onClick={() => connect(connector.metadata.id)}
+                  ></Image>
+                )
+              );
+            })}
+          </div>
+        </>
+      )}
+
       <div className="mt-12 flex h-auto w-[40rem] max-w-full flex-col gap-4 rounded-lg p-4 shadow-md">
         <div className="mb-4 text-2xl font-bold">Bitcoin</div>
 
@@ -183,13 +214,20 @@ export default function Home() {
           Get Pubkey
         </Button>
 
+        <Divider />
+        <Input label="Message" value={message} onValueChange={setMessage}></Input>
         <Button color="primary" onClick={onSignMessage}>
           Sign Message
         </Button>
+
+        <Divider />
+        <Input label="Address" value={address} onValueChange={setAddress}></Input>
+        <Input label="Satoshis" value={satoshis} onValueChange={setSatoshis} inputMode="numeric"></Input>
         <Button color="primary" onClick={onSendBitcoin}>
           Send Bitcoin
         </Button>
-        {connector && (
+
+        {accounts.length !== 0 && (
           <div className="flex flex-col gap-4">
             <Divider></Divider>
             <Input
@@ -238,7 +276,7 @@ export default function Home() {
         </div>
       </div>
 
-      <Link href="/others">Other</Link>
+      {/* <Link href="/others">Others</Link> */}
     </div>
   );
 }
