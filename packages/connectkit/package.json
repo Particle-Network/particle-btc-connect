@@ -32,6 +32,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "echo '{ \"type\": \"commonjs\" }' > dist/package.json && node esBuild.js",
+    "build:development": "echo '{ \"type\": \"commonjs\" }' > dist/package.json && NODE_ENV=development node esBuild.js",
     "build:watch": "yarn build --watch",
     "clean": "rm -rf dist && rm -rf esm",
     "dev": "yarn clean && NODE_ENV=development yarn build:watch & NODE_ENV=development yarn typegen:watch",
