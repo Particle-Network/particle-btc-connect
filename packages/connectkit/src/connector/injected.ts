@@ -60,17 +60,11 @@ export abstract class InjectedConnector extends BaseConnector {
   }
   on(event: string, handler: (data?: unknown) => void) {
     const provider = this.getProvider();
-    if (!provider) {
-      throw new Error(`${this.metadata.name} is not install!`);
-    }
-    return provider.on?.(event, handler);
+    return provider?.on?.(event, handler);
   }
   removeListener(event: string, handler: (data?: unknown) => void) {
     const provider = this.getProvider();
-    if (!provider) {
-      throw new Error(`${this.metadata.name} is not install!`);
-    }
-    return provider.removeListener?.(event, handler);
+    return provider?.removeListener?.(event, handler);
   }
 
   getProvider() {
