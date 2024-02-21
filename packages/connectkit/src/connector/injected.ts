@@ -23,40 +23,24 @@ export abstract class InjectedConnector extends BaseConnector {
   }
 
   async requestAccounts(): Promise<string[]> {
-    const provider = this.getProvider();
-    if (!provider) {
-      throw new Error(`${this.metadata.name} is not install!`);
-    }
-    const accounts = await provider.requestAccounts();
+    const accounts = await this.getProviderOrThrow().requestAccounts();
     console.log('🚀 ~ InjectedConnector ~ requestAccounts ~ accounts:', accounts);
     return accounts;
   }
 
   async getAccounts(): Promise<string[]> {
-    const provider = this.getProvider();
-    if (!provider) {
-      throw new Error(`${this.metadata.name} is not install!`);
-    }
-    const accounts = await provider.getAccounts();
+    const accounts = await this.getProviderOrThrow().getAccounts();
     return accounts;
   }
   async getPublicKey(): Promise<string> {
-    const provider = this.getProvider();
-    if (!provider) {
-      throw new Error(`${this.metadata.name} is not install!`);
-    }
-    return provider.getPublicKey();
+    return this.getProviderOrThrow().getPublicKey();
   }
   async signMessage(signStr: string, type?: 'ecdsa' | 'bip322-simple'): Promise<string> {
-    const provider = this.getProvider();
-    if (!provider) {
-      throw new Error(`${this.metadata.name} is not install!`);
-    }
     const addresses = await this.getAccounts();
     if (addresses.length === 0) {
       throw new Error(`${this.metadata.name} not connected!`);
     }
-    return provider.signMessage(signStr, type);
+    return this.getProviderOrThrow().signMessage(signStr, type);
   }
   on(event: string, handler: (data?: unknown) => void) {
     const provider = this.getProvider();
@@ -78,27 +62,23 @@ export abstract class InjectedConnector extends BaseConnector {
     }
   }
 
-  async getNetwork(): Promise<'livenet' | 'testnet'> {
+  getProviderOrThrow() {
     const provider = this.getProvider();
     if (!provider) {
-      throw new Error(`${this.metadata.name} is not install!`);
+      throw new Error(`${this.metadata.name} is not install or not create Bitcoin wallet!`);
     }
-    return provider.getNetwork();
+    return provider;
+  }
+
+  async getNetwork(): Promise<'livenet' | 'testnet'> {
+    return this.getProviderOrThrow().getNetwork();
   }
   async switchNetwork(network: 'livenet' | 'testnet'): Promise<void> {
-    const provider = this.getProvider();
-    if (!provider) {
-      throw new Error(`${this.metadata.name} is not install!`);
-    }
-    return provider.switchNetwork(network);
+    return this.getProviderOrThrow().switchNetwork(network);
   }
 
   async sendBitcoin(toAddress: string, satoshis: number, options?: { feeRate: number }): Promise<string> {
-    const provider = this.getProvider();
-    if (!provider) {
-      throw new Error(`${this.metadata.name} is not install!`);
-    }
-    return provider.sendBitcoin(toAddress, satoshis, options);
+    return this.getProviderOrThrow().sendBitcoin(toAddress, satoshis, options);
   }
 
   async sendInscription(
@@ -106,11 +86,7 @@ export abstract class InjectedConnector extends BaseConnector {
     inscriptionId: string,
     options?: { feeRate: number }
   ): Promise<{ txid: string }> {
-    const provider = this.getProvider();
-    if (!provider) {
-      throw new Error(`${this.metadata.name} is not install!`);
-    }
-    const result = await provider.sendInscription(address, inscriptionId, options);
+    const result = await this.getProviderOrThrow().sendInscription(address, inscriptionId, options);
     if (typeof result === 'string') {
       return {
         txid: result,

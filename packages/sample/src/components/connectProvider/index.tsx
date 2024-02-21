@@ -5,11 +5,18 @@ import {
   ConnectProvider as BTCConnectProvider,
   BitgetConnector,
   OKXConnector,
+  TokenPocketConnector,
   UnisatConnector,
 } from '@particle-network/btc-connectkit';
+import VConsole from 'vconsole';
 
 if (typeof window !== 'undefined') {
   (window as any).__PARTICLE_ENVIRONMENT__ = process.env.NEXT_PUBLIC_PARTICLE_ENV;
+  if (process.env.NEXT_PUBLIC_PARTICLE_ENV === 'development') {
+    setTimeout(() => {
+      new VConsole({ theme: 'dark' });
+    }, 300);
+  }
 }
 
 export default function ConnectProvider({ children }: { children: React.ReactNode }) {
@@ -23,7 +30,7 @@ export default function ConnectProvider({ children }: { children: React.ReactNod
           accountContracts,
         },
       }}
-      connectors={[new UnisatConnector(), new OKXConnector(), new BitgetConnector()]}
+      connectors={[new UnisatConnector(), new OKXConnector(), new BitgetConnector(), new TokenPocketConnector()]}
     >
       {children}
     </BTCConnectProvider>
