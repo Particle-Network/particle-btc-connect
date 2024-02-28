@@ -5,6 +5,7 @@ import particleLogo from '@/assets/particle-logo.svg';
 import { accountContracts } from '@/config';
 import { Button, Checkbox, Divider, Input, Select, SelectItem } from '@nextui-org/react';
 import {
+  BaseConnector,
   useAccounts,
   useBTCProvider,
   useConnectModal,
@@ -14,13 +15,14 @@ import {
 import { chains } from '@particle-network/chains';
 import { useRequest } from 'ahooks';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { type Hex } from 'viem';
 
 export default function Home() {
   const { openConnectModal, disconnect } = useConnectModal();
   const { accounts } = useAccounts();
-  const { evmAccount, smartAccount, chainId, switchChain } = useETHProvider();
+  const { evmAccount, chainId, switchChain, publicClient, getFeeQuotes, sendUserOp } = useETHProvider();
   const { provider, getNetwork, switchNetwork, signMessage, getPublicKey, sendBitcoin, sendInscription } =
     useBTCProvider();
   const [gasless, setGasless] = useState<boolean>(false);
@@ -30,6 +32,7 @@ export default function Home() {
   const [address, setAddress] = useState<string>();
   const [satoshis, setSatoshis] = useState<string>('1');
   const { connectors, connect } = useConnector();
+  const [directConnectors, setDirectConnectors] = useState<BaseConnector[]>();
 
   const onGetNetwork = async () => {
     try {
@@ -114,23 +117,20 @@ export default function Home() {
 
   const { run: onSendNativeToken, loading: sendTokenLoading } = useRequest(
     async () => {
-      if (!smartAccount) {
-        throw new Error('Please connect wallet first!');
-      }
-      const balance = await smartAccount.provider.request({
-        method: 'eth_getBalance',
-        params: [await smartAccount.getAddress(), 'latest'],
-      });
-      const value = BigInt(balance) > 100000000n ? '100000000' : '0';
+      const balance =
+        (await publicClient?.getBalance({
+          address: evmAccount as Hex,
+        })) || 0n;
+      const value = balance > 100000000n ? 100000000n : 0n;
       const tx = {
         to: '0xe8fc0baE43aA264064199dd494d0f6630E692e73',
-        value,
+        value: `0x${value.toString(16)}`,
         data: '0x',
       };
-      const feeQuotes = await smartAccount.getFeeQuotes(tx);
+      const feeQuotes = await getFeeQuotes(tx);
       const { userOp, userOpHash } =
         (gasless && feeQuotes.verifyingPaymasterGasless) || feeQuotes.verifyingPaymasterNative;
-      const hash = await smartAccount.sendUserOperation({ userOp, userOpHash });
+      const hash = await sendUserOp({ userOp, userOpHash });
       return hash;
     },
     {
@@ -151,6 +151,10 @@ export default function Home() {
       },
     }
   );
+
+  useEffect(() => {
+    setDirectConnectors(connectors.filter((item) => item.isReady()));
+  }, [connectors]);
 
   return (
     <div className="container mx-auto flex h-full flex-col items-center gap-6 overflow-auto py-10">
@@ -175,23 +179,21 @@ export default function Home() {
         )}
       </div>
 
-      {accounts.length === 0 && (
+      {accounts.length === 0 && directConnectors && (
         <>
           <Divider></Divider>
           <div className="mt-6 flex gap-8">
-            {connectors.map((connector) => {
+            {directConnectors.map((connector) => {
               return (
-                connector.isReady() && (
-                  <Image
-                    key={connector.metadata.id}
-                    src={connector.metadata.icon}
-                    alt={connector.metadata.name}
-                    width={50}
-                    height={50}
-                    className="cursor-pointer rounded-lg"
-                    onClick={() => connect(connector.metadata.id)}
-                  ></Image>
-                )
+                <Image
+                  key={connector.metadata.id}
+                  src={connector.metadata.icon}
+                  alt={connector.metadata.name}
+                  width={50}
+                  height={50}
+                  className="cursor-pointer rounded-lg"
+                  onClick={() => connect(connector.metadata.id)}
+                ></Image>
               );
             })}
           </div>
@@ -244,8 +246,12 @@ export default function Home() {
         )}
       </div>
 
-      <div className="mt-20 flex h-auto w-[40rem] max-w-full flex-col gap-4 rounded-lg p-4 shadow-md">
+      <div className="relative mb-20 mt-20 flex h-auto w-[40rem] max-w-full flex-col gap-4 rounded-lg p-4 shadow-md">
         <div className="mb-4 text-2xl font-bold">EVM</div>
+
+        <Checkbox className="absolute right-4 top-4" isSelected={gasless} onValueChange={setGasless}>
+          Gasless
+        </Checkbox>
 
         <div className="overflow-hidden text-ellipsis whitespace-nowrap">Address: {evmAccount}</div>
         <div className="overflow-hidden text-ellipsis whitespace-nowrap">ChainId: {chainId}</div>
@@ -266,17 +272,16 @@ export default function Home() {
           })}
         </Select>
 
-        <div className="felx w-full items-center">
-          <Button color="primary" onClick={onSendNativeToken} isLoading={sendTokenLoading} className="px-10">
-            Send Native Token
-          </Button>
-          <Checkbox className="ml-4 flex-none" isSelected={gasless} onValueChange={setGasless}>
-            Gasless
-          </Checkbox>
-        </div>
+        <Button
+          color="primary"
+          onClick={onSendNativeToken}
+          isLoading={sendTokenLoading}
+          className="px-10"
+          isDisabled={evmAccount == null}
+        >
+          Send Native Token
+        </Button>
       </div>
-
-      {/* <Link href="/others">Others</Link> */}
     </div>
   );
 }

@@ -1,11 +1,14 @@
-import { intToHex } from '@ethereumjs/util';
 import { SmartAccount, type AAOptions } from '@particle-network/aa';
 import { chains } from '@particle-network/chains';
 import { walletEntryPlugin, type WalletOption } from '@particle-network/wallet';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import ConnectModal from '../components/connectModal';
+import SignModal from '../components/signModal';
 import { type BaseConnector } from '../connector/base';
 import { AASignerProvider } from '../evmSigner';
+import useModalStateValue from '../hooks/useModalStateValue';
+import { EventName } from '../types/eventName';
+import events from '../utils/eventUtils';
 
 interface GlobalState {
   connectorId?: string;
@@ -49,7 +52,14 @@ export const ConnectProvider = ({
   connectors: BaseConnector[];
   autoConnect?: boolean;
 }) => {
-  const [openModal, setOpenModal] = useState<boolean>(false);
+  const {
+    closeModal: closeConnectModal,
+    isModalOpen: connectModalOpen,
+    openModal: openConnectModal,
+  } = useModalStateValue();
+
+  const { closeModal: closeSignModal, isModalOpen: signModalOpen, openModal: openSignModal } = useModalStateValue();
+
   const [connectorId, setConnectorId] = useState<string>();
   const [accounts, setAccounts] = useState<string[]>([]);
   const [evmAccount, setEVMAccount] = useState<string>();
@@ -254,6 +264,21 @@ export const ConnectProvider = ({
     }
   }, [evmAccount, smartAccount, options, evmSupportChainIds]);
 
+  useEffect(() => {
+    if (accounts.length === 0) {
+      closeConnectModal();
+      closeSignModal();
+      if (events.listenerCount(EventName.sendUserOpResult) > 0) {
+        events.emit(EventName.sendUserOpResult, {
+          error: {
+            code: -32600,
+            message: 'Wallet disconnected',
+          },
+        });
+      }
+    }
+  }, [accounts, closeConnectModal, closeSignModal]);
+
   return (
     <ConnectContext.Provider
       value={{
@@ -261,8 +286,8 @@ export const ConnectProvider = ({
         setConnectorId,
         connector,
         connectors,
-        openConnectModal: () => setOpenModal(true),
-        closeConnectModal: () => setOpenModal(false),
+        openConnectModal,
+        closeConnectModal,
         accounts,
         provider,
         disconnect,
@@ -276,7 +301,8 @@ export const ConnectProvider = ({
       }}
     >
       {children}
-      {openModal && <ConnectModal connectors={connectors} />}
+      <ConnectModal open={connectModalOpen} onClose={closeConnectModal} />
+      <SignModal open={signModalOpen} onClose={closeSignModal} onOpen={openSignModal} />
     </ConnectContext.Provider>
   );
 };
@@ -284,96 +310,4 @@ export const ConnectProvider = ({
 export const useConnectProvider = () => {
   const context = useContext(ConnectContext);
   return context;
-};
-
-export const useConnectModal = () => {
-  const { openConnectModal, disconnect } = useConnectProvider();
-  return { openConnectModal, disconnect };
-};
-
-export const useAccounts = () => {
-  const { accounts } = useConnectProvider();
-  return { accounts };
-};
-
-export const useConnector = () => {
-  const { connectors, setConnectorId } = useConnectProvider();
-
-  const connect = useCallback(
-    async (connectorId: string) => {
-      const connector = connectors.find((item) => item.metadata.id === connectorId);
-      if (!connector) {
-        throw new Error(`connector id ${connectorId} not found`);
-      }
-      const accounts = await connector.requestAccounts();
-      if (accounts.length > 0) {
-        localStorage.setItem('current-connector-id', connector.metadata.id);
-        setConnectorId(connector.metadata.id);
-      }
-    },
-    [connectors, setConnectorId]
-  );
-
-  return { connectors, connect };
-};
-
-export const useBTCProvider = () => {
-  const { connector, provider, accounts, getPublicKey, signMessage, getNetwork, switchNetwork, sendBitcoin } =
-    useConnectProvider();
-
-  const sendInscription = useCallback(
-    async (address: string, inscriptionId: string, options?: { feeRate: number }) => {
-      if (!connector) {
-        throw new Error('Wallet not connected!');
-      }
-      const result = await connector.sendInscription(address, inscriptionId, options);
-      return result;
-    },
-    [connector]
-  );
-
-  return { provider, accounts, getPublicKey, signMessage, getNetwork, switchNetwork, sendBitcoin, sendInscription };
-};
-
-export const useETHProvider = () => {
-  const { evmAccount, smartAccount } = useConnectProvider();
-  const [chainId, setChainId] = useState<number>();
-
-  useEffect(() => {
-    if (smartAccount) {
-      const chainId = (smartAccount.provider as any).chainId as number;
-      setChainId(chainId);
-
-      const onChangeChange = (id: string) => {
-        setChainId(Number(id));
-      };
-      smartAccount.provider.on('chainChanged', onChangeChange);
-      return () => {
-        smartAccount.provider.removeListener('chainChanged', onChangeChange);
-      };
-    }
-  }, [smartAccount]);
-
-  const switchChain = useCallback(
-    async (chainId: number) => {
-      if (smartAccount?.provider) {
-        await smartAccount.provider.request({
-          method: 'wallet_switchEthereumChain',
-          params: [
-            {
-              chainId: intToHex(chainId),
-            },
-          ],
-        });
-      }
-    },
-    [smartAccount?.provider]
-  );
-
-  return {
-    evmAccount,
-    smartAccount,
-    switchChain,
-    chainId,
-  };
 };

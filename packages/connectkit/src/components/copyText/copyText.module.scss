@@ -1,0 +1,16 @@
+.copyText {
+  cursor: pointer;
+  text-decoration-line: underline;
+  &:hover {
+    opacity: 0.75;
+  }
+}
+
+.copied {
+  cursor: none;
+  text-decoration-line: none;
+  color: #a855f7;
+  &:hover {
+    opacity: 1;
+  }
+}

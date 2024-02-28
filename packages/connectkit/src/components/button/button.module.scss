@@ -1,0 +1,22 @@
+.btn {
+  border-radius: 8px;
+  border: 1px solid #3a3a3a;
+  padding: 6px 24px;
+  font-size: 16px;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  gap: 16px;
+
+  &:hover {
+    background: hsla(0, 0%, 100%, 0.05);
+  }
+  &:disabled {
+    background: hsla(0, 0%, 100%, 0.15);
+    color: #ffffff80;
+    cursor: not-allowed;
+  }
+}

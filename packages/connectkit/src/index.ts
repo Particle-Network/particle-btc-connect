@@ -1,5 +1,6 @@
 export * from './connector';
-export { ConnectProvider, useAccounts, useBTCProvider, useConnectModal, useConnector, useETHProvider } from './context';
+export { ConnectProvider } from './context';
+export * from './hooks';
 export const getVersion = () => {
   return '__buildVersion';
 };

@@ -1,4 +1,5 @@
 import { bytesToHex, publicToAddress, toBytes, toChecksumAddress, toRpcSig } from '@ethereumjs/util';
+import type { UserOp } from '@particle-network/aa';
 import bitcore from 'bitcore-lib';
 
 export const pubKeyToEVMAddress = (pubKey: string) => {
@@ -12,3 +13,10 @@ export const convertSignature = (signature: string) => {
   const evmSig = toRpcSig(v, sig.r.toBuffer(), sig.s.toBuffer());
   return evmSig;
 };
+
+export function caculateNativeFee(userOp: UserOp): bigint {
+  return (
+    (BigInt(userOp.callGasLimit) + BigInt(userOp.verificationGasLimit) + BigInt(userOp.preVerificationGas)) *
+    BigInt(userOp.maxFeePerGas)
+  );
+}

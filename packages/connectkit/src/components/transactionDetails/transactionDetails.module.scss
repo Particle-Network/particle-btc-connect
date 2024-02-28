@@ -1,0 +1,62 @@
+.detailsCard {
+  color: white;
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #252525;
+  background: #232529;
+  padding: 10px;
+  color: white;
+  margin-top: 16px;
+
+  .title {
+    font-size: 16px;
+    font-weight: 600;
+    text-align: left;
+    margin-bottom: 12px;
+  }
+
+  .nftContract {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 16px;
+    color: #a855f7;
+  }
+
+  .row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-top: 6px;
+    align-items: center;
+    gap: 8px;
+
+    .tokenIcon {
+      height: 32px;
+      width: 32px;
+      margin: 10px 0;
+      border-radius: 50%;
+    }
+
+    .nftIcon {
+      height: 32px;
+      width: 32px;
+      margin: 10px 0;
+      border-radius: 2px;
+      display: inline;
+      margin-right: 8px;
+    }
+
+    .balanceChange {
+      font-size: 16px;
+      text-align: end;
+      font-weight: 500;
+    }
+
+    .right {
+      text-align: end;
+    }
+  }
+}

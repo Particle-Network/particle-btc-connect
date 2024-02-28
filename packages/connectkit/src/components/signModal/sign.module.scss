@@ -1,0 +1,77 @@
+.modalContent {
+  color: white;
+  text-align: center;
+
+  .closeBtn {
+    cursor: pointer;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+  }
+
+  .chainInfo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    margin-bottom: 8px;
+    justify-content: center;
+
+    img {
+      height: 18px;
+      width: 18px;
+    }
+  }
+
+  .addressContainer {
+    height: 28px;
+    margin-top: 8px;
+    margin-bottom: 16px;
+
+    .addressInfo {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 20px;
+      background: #3a3a3aa2;
+
+      justify-content: center;
+
+      img {
+        height: 18px;
+        width: 18px;
+      }
+    }
+  }
+
+  .detailsContent {
+    width: 100%;
+    overflow-y: auto;
+    max-height: 500px;
+  }
+
+  .estimatedGas {
+    font-size: 12px;
+    margin-top: 24px;
+    color: #ffffffa1;
+  }
+
+  .signBtn {
+    margin-top: 24px;
+    min-width: 200px;
+  }
+
+  .notRemind {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    margin-top: 16px;
+    color: #ffffffa1;
+    cursor: pointer;
+  }
+}
