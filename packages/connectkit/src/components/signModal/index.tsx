@@ -169,7 +169,7 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
   useEffect(() => {
     if (userOpBundle && nativeBalance != null && deserializeResult) {
       const nativeChange = deserializeResult
-        .map((item) => BigInt(item.estimatedChanges.natives[0].nativeChange || 0))
+        .map((item) => BigInt(item.estimatedChanges?.natives?.[0]?.nativeChange?.replace('-', '') || 0))
         .reduce((accumulator, currentValue) => accumulator + currentValue, BigInt(0));
       if (userOpBundle.userOp.paymasterAndData.length > 2) {
         // 计算余额，需大于等于nativeChange
