@@ -156,7 +156,13 @@ export default function Home() {
       },
       onError: (error: any) => {
         console.log('🚀 ~ onSendUserOp ~ error:', error);
-        toast.error(error.data?.extraMessage || error.details || error.message || 'send token error');
+        toast.error(
+          error.data?.extraMessage?.message ||
+            error.data?.extraMessage ||
+            error.details ||
+            error.message ||
+            'send user operation error'
+        );
       },
     }
   );

@@ -8,6 +8,7 @@ import { type BaseConnector } from '../connector/base';
 import { AASignerProvider } from '../evmSigner';
 import useModalStateValue from '../hooks/useModalStateValue';
 import { EventName } from '../types/eventName';
+import { getBTCAAAddress } from '../utils/ethereumUtils';
 import events from '../utils/eventUtils';
 import txConfirm from '../utils/txConfirmUtils';
 
@@ -159,9 +160,10 @@ export const ConnectProvider = ({
 
   useEffect(() => {
     if (accounts.length > 0 && smartAccount) {
-      smartAccount
-        .getAddress()
-        .then((res) => setEVMAccount(res))
+      getBTCAAAddress(smartAccount, accounts[0])
+        .then((res) => {
+          setEVMAccount(res);
+        })
         .catch((e) => {
           setEVMAccount(undefined);
           console.error('smartAccount getAddress error', e);
@@ -170,7 +172,7 @@ export const ConnectProvider = ({
     } else {
       setEVMAccount(undefined);
     }
-  }, [accounts, smartAccount]);
+  }, [accounts, smartAccount, getPublicKey]);
 
   const requestAccount = useCallback(
     async (connector: BaseConnector) => {
