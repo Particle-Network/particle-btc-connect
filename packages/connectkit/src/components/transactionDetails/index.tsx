@@ -82,7 +82,7 @@ const TransactionDetails = ({ details }: { details: EVMDeserializeTransactionRes
   }, []);
 
   const functionContent = useMemo(() => {
-    if (details.data.function) {
+    if (details.type !== TransactionSmartType.NATIVE_TRANSFER && details.data.function) {
       const params = details.data.function.params.map((item) => item.name);
       return `${details.data.function.name}(${params.join(', ')})`;
     }

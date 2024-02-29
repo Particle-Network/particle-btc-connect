@@ -1,6 +1,5 @@
 .btn {
   border-radius: 8px;
-  border: 1px solid #3a3a3a;
   padding: 6px 24px;
   font-size: 16px;
   position: relative;
@@ -8,15 +7,17 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: #000;
   gap: 16px;
+  background: white;
 
   &:hover {
-    background: hsla(0, 0%, 100%, 0.05);
+    opacity: 0.85;
   }
   &:disabled {
-    background: hsla(0, 0%, 100%, 0.15);
-    color: #ffffff80;
+    background: hsla(0, 0%, 100%, 0.2);
+    color: #ffffffa3;
     cursor: not-allowed;
+    opacity: 1;
   }
 }

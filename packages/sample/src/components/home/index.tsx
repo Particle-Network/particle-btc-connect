@@ -1,23 +1,31 @@
 'use client';
 
+import addIcon from '@/assets/add.svg';
 import bitcoinIcon from '@/assets/bitcoin.png';
 import particleLogo from '@/assets/particle-logo.svg';
+import removeIcon from '@/assets/remove.svg';
 import { accountContracts } from '@/config';
 import { Button, Checkbox, Divider, Input, Select, SelectItem } from '@nextui-org/react';
 import {
-  BaseConnector,
   useAccounts,
   useBTCProvider,
   useConnectModal,
   useConnector,
   useETHProvider,
+  type BaseConnector,
 } from '@particle-network/btc-connectkit';
 import { chains } from '@particle-network/chains';
 import { useRequest } from 'ahooks';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { type Hex } from 'viem';
+import { isAddress, isHex } from 'viem';
+
+type TxData = {
+  to: string;
+  value: string;
+  data: string;
+};
 
 export default function Home() {
   const { openConnectModal, disconnect } = useConnectModal();
@@ -26,6 +34,7 @@ export default function Home() {
   const { provider, getNetwork, switchNetwork, signMessage, getPublicKey, sendBitcoin, sendInscription } =
     useBTCProvider();
   const [gasless, setGasless] = useState<boolean>(false);
+  const [forceHideModal, setForceHideModal] = useState<boolean>(false);
   const [inscriptionReceiverAddress, setInscriptionReceiverAddress] = useState<string>();
   const [inscriptionId, setInscriptionId] = useState<string>();
   const [message, setMessage] = useState<string>('Hello, Particle!');
@@ -33,6 +42,13 @@ export default function Home() {
   const [satoshis, setSatoshis] = useState<string>('1');
   const { connectors, connect } = useConnector();
   const [directConnectors, setDirectConnectors] = useState<BaseConnector[]>();
+  const [txDatas, setTxDatas] = useState<TxData[]>([
+    {
+      to: '',
+      value: '0x0',
+      data: '0x',
+    },
+  ]);
 
   const onGetNetwork = async () => {
     try {
@@ -115,22 +131,15 @@ export default function Home() {
     }
   };
 
-  const { run: onSendNativeToken, loading: sendTokenLoading } = useRequest(
+  const { run: onSendUserOp, loading: sendUserOpLoading } = useRequest(
     async () => {
-      const balance =
-        (await publicClient?.getBalance({
-          address: evmAccount as Hex,
-        })) || 0n;
-      const value = balance > 100000000n ? 100000000n : 0n;
-      const tx = {
-        to: '0xe8fc0baE43aA264064199dd494d0f6630E692e73',
-        value: `0x${value.toString(16)}`,
-        data: '0x',
-      };
-      const feeQuotes = await getFeeQuotes(tx);
+      if (txDatas.some((tx) => !isAddress(tx.to) || !isHex(tx.data) || !isHex(tx.value))) {
+        throw new Error('Params Error, To is EVM address, Data and Value are hex string.');
+      }
+      const feeQuotes = await getFeeQuotes(txDatas);
       const { userOp, userOpHash } =
         (gasless && feeQuotes.verifyingPaymasterGasless) || feeQuotes.verifyingPaymasterNative;
-      const hash = await sendUserOp({ userOp, userOpHash });
+      const hash = await sendUserOp({ userOp, userOpHash }, forceHideModal);
       return hash;
     },
     {
@@ -145,9 +154,9 @@ export default function Home() {
           },
         });
       },
-      onError: (error) => {
-        console.log('🚀 ~ onSendNativeToken ~ error:', error);
-        toast.error(error.message || 'send token error');
+      onError: (error: any) => {
+        console.log('🚀 ~ onSendUserOp ~ error:', error);
+        toast.error(error.details || error.message || 'send token error');
       },
     }
   );
@@ -155,6 +164,40 @@ export default function Home() {
   useEffect(() => {
     setDirectConnectors(connectors.filter((item) => item.isReady()));
   }, [connectors]);
+
+  const addTxData = () => {
+    if (txDatas.length < 5) {
+      setTxDatas([
+        ...txDatas,
+        {
+          to: '',
+          value: '0x0',
+          data: '0x',
+        },
+      ]);
+    }
+  };
+
+  const removeTxData = () => {
+    if (txDatas.length > 1) {
+      setTxDatas(txDatas.slice(0, txDatas.length - 1));
+    }
+  };
+
+  const onToChanged = (to: string, index: number) => {
+    txDatas[index].to = to;
+    setTxDatas([...txDatas]);
+  };
+
+  const onValueChanged = (value: string, index: number) => {
+    txDatas[index].value = value;
+    setTxDatas([...txDatas]);
+  };
+
+  const onDataChanged = (data: string, index: number) => {
+    txDatas[index].data = data;
+    setTxDatas([...txDatas]);
+  };
 
   return (
     <div className="container mx-auto flex h-full flex-col items-center gap-6 overflow-auto py-10">
@@ -249,10 +292,6 @@ export default function Home() {
       <div className="relative mb-20 mt-20 flex h-auto w-[40rem] max-w-full flex-col gap-4 rounded-lg p-4 shadow-md">
         <div className="mb-4 text-2xl font-bold">EVM</div>
 
-        <Checkbox className="absolute right-4 top-4" isSelected={gasless} onValueChange={setGasless}>
-          Gasless
-        </Checkbox>
-
         <div className="overflow-hidden text-ellipsis whitespace-nowrap">Address: {evmAccount}</div>
         <div className="overflow-hidden text-ellipsis whitespace-nowrap">ChainId: {chainId}</div>
         <Select
@@ -272,14 +311,54 @@ export default function Home() {
           })}
         </Select>
 
+        <Divider className="my-4"></Divider>
+
+        <div className="flex justify-between font-medium">
+          Send User Operation
+          <div className="flex gap-4">
+            <Image
+              src={removeIcon}
+              alt=""
+              className="cursor-pointer data-[tx-amount='1']:hidden"
+              data-tx-amount={txDatas.length}
+              onClick={removeTxData}
+            ></Image>
+            <Image
+              src={addIcon}
+              alt=""
+              className="cursor-pointer data-[tx-amount='5']:hidden"
+              data-tx-amount={txDatas.length}
+              onClick={addTxData}
+            ></Image>
+          </div>
+        </div>
+
+        {txDatas.map((tx, index) => (
+          <div className="mt-2 flex w-full flex-col gap-2" key={index}>
+            <Input label="To" value={tx.to} onValueChange={(value) => onToChanged(value, index)}></Input>
+            <Input label="Value" value={tx.value} onValueChange={(value) => onValueChanged(value, index)}></Input>
+            <Input label="Data" value={tx.data} onValueChange={(value) => onDataChanged(value, index)}></Input>
+            <Divider></Divider>
+          </div>
+        ))}
+
+        <div className="flex w-full justify-end gap-4">
+          <Checkbox isSelected={forceHideModal} onValueChange={setForceHideModal}>
+            Force Hide Confirm Modal
+          </Checkbox>
+
+          <Checkbox isSelected={gasless} onValueChange={setGasless}>
+            Gasless
+          </Checkbox>
+        </div>
         <Button
           color="primary"
-          onClick={onSendNativeToken}
-          isLoading={sendTokenLoading}
+          onClick={onSendUserOp}
+          isLoading={sendUserOpLoading}
           className="px-10"
           isDisabled={evmAccount == null}
         >
-          Send Native Token
+          Send
         </Button>
       </div>
     </div>

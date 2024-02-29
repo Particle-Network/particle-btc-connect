@@ -5,6 +5,7 @@ import { useConnector } from '../../hooks';
 import back from '../../icons/back.svg';
 import close from '../../icons/close.svg';
 import retryIcon from '../../icons/retry.svg';
+import Button from '../button';
 import Modal from '../modal';
 import styles from './connect.module.scss';
 
@@ -96,14 +97,14 @@ const ConnectModal = ({ open, onClose }: { open: boolean; onClose: () => void })
           ) : (
             <>
               <div className={styles.connection}>Wallet Not Installed.</div>
-              <button
+              <Button
                 className={styles.btnDownload}
                 onClick={() => {
                   window.open(selectConnector?.metadata.downloadUrl, '_blank');
                 }}
               >
                 Get
-              </button>
+              </Button>
             </>
           )}
         </div>
