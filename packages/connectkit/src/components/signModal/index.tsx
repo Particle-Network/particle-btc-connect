@@ -218,7 +218,7 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
           isLoading={loading || deserializeLoading}
           isDisabled={disabled}
         >
-          {deserializeLoading ? 'LOADING' : 'CONFIRM'}
+          {deserializeLoading ? 'LOADING' : disabled ? 'INSUFFICIENT FEE' : 'CONFIRM'}
         </Button>
 
         {showNotRemind && (

@@ -9,6 +9,7 @@ import { AASignerProvider } from '../evmSigner';
 import useModalStateValue from '../hooks/useModalStateValue';
 import { EventName } from '../types/eventName';
 import events from '../utils/eventUtils';
+import txConfirm from '../utils/txConfirmUtils';
 
 interface GlobalState {
   connectorId?: string;
@@ -212,6 +213,7 @@ export const ConnectProvider = ({
 
   const disconnect = useCallback(() => {
     localStorage.removeItem('current-connector-id');
+    txConfirm.reset();
     if (connector) {
       connector.disconnect();
     }

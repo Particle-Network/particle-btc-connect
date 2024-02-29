@@ -4,6 +4,7 @@ import { accountContracts } from '@/config';
 import {
   ConnectProvider as BTCConnectProvider,
   BitgetConnector,
+  BybitConnector,
   OKXConnector,
   TokenPocketConnector,
   UnisatConnector,
@@ -30,7 +31,13 @@ export default function ConnectProvider({ children }: { children: React.ReactNod
           accountContracts,
         },
       }}
-      connectors={[new UnisatConnector(), new OKXConnector(), new BitgetConnector(), new TokenPocketConnector()]}
+      connectors={[
+        new UnisatConnector(),
+        new OKXConnector(),
+        new BybitConnector(),
+        new BitgetConnector(),
+        new TokenPocketConnector(),
+      ]}
     >
       {children}
     </BTCConnectProvider>
