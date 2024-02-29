@@ -8,6 +8,7 @@
   padding: 10px;
   color: white;
   margin-top: 16px;
+  overflow-x: hidden;
 
   .title {
     font-size: 16px;
@@ -50,6 +51,14 @@
     }
 
     .balanceChange {
+      font-size: 16px;
+      text-align: end;
+      font-weight: 500;
+      flex-grow: 2;
+      word-break: break-word;
+    }
+
+    .tokenSymbol {
       font-size: 16px;
       text-align: end;
       font-weight: 500;

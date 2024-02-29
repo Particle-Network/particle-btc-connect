@@ -97,12 +97,10 @@ const TransactionDetails = ({ details }: { details: EVMDeserializeTransactionRes
         return (
           <div key={nativeItem.address} className={styles.row}>
             <img className={styles.tokenIcon} src={nativeIcon}></img>
-            <div className={styles.balanceChange}>
-              <span style={{ color: balanceChangeTextColor(nativeItem.nativeChange) }}>
-                {formatUnits(BigInt(nativeItem.nativeChange), chainInfo?.nativeCurrency.decimals || 18)}
-              </span>
-              {` ${chainInfo?.nativeCurrency.symbol}`}
+            <div className={styles.balanceChange} style={{ color: balanceChangeTextColor(nativeItem.nativeChange) }}>
+              {formatUnits(BigInt(nativeItem.nativeChange), chainInfo?.nativeCurrency.decimals || 18)}
             </div>
+            <div className={styles.tokenSymbol}>{chainInfo?.nativeCurrency.symbol}</div>
           </div>
         );
       })}
