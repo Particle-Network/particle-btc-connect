@@ -1,0 +1,23 @@
+.tipContainer {
+  position: relative;
+  overflow: visible;
+  .tipContent {
+    background: hsl(240 5% 26%);
+    color: white;
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: -100%;
+    padding: 3px 6px;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.5s;
+    font-size: 11px;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+  &:hover .tipContent {
+    visibility: visible;
+    opacity: 1;
+  }
+}

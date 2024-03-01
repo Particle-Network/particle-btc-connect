@@ -64,6 +64,17 @@
       font-weight: 500;
     }
 
+    .toContract {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      img {
+        display: inline;
+        width: 18px;
+        height: 18px;
+      }
+    }
+
     .right {
       text-align: end;
     }

@@ -2,9 +2,12 @@ import { chains } from '@particle-network/chains';
 import { useCallback, useMemo } from 'react';
 import { formatUnits } from 'viem';
 import { useETHProvider } from '../../hooks';
+import unverified from '../../icons/unverified.svg';
+import verified from '../../icons/verified.svg';
 import { TransactionSmartType, type EVMDeserializeTransactionResult } from '../../types/deserializeTx';
 import { defaultTokenIcon, ipfsToSrc, shortString } from '../../utils';
 import CopyText from '../copyText';
+import Tooltip from '../tooltip';
 import styles from './transactionDetails.module.scss';
 
 const TransactionDetails = ({ details }: { details: EVMDeserializeTransactionResult }) => {
@@ -149,7 +152,14 @@ const TransactionDetails = ({ details }: { details: EVMDeserializeTransactionRes
       {to && (
         <div className={styles.row}>
           <div>To</div>
-          <CopyText value={to}>{shortString(to)}</CopyText>
+          <div className={styles.toContract}>
+            {details.toVerified != null && (
+              <Tooltip content={details.toVerified ? 'Verified Contract' : 'Unverified Contract'}>
+                <img src={details.toVerified ? verified : unverified}></img>
+              </Tooltip>
+            )}
+            <CopyText value={to}>{shortString(to)}</CopyText>
+          </div>
         </div>
       )}
 

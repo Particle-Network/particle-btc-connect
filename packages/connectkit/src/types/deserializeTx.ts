@@ -14,6 +14,7 @@ export enum TransactionSmartType {
 export type EVMDeserializeTransactionResult = {
   type?: TransactionSmartType;
   estimatedChanges: EVMEstimatedChange;
+  toVerified?: boolean;
   data: EVMData;
   toTag?: string;
   price?: NftPrice;
