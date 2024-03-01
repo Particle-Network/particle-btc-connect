@@ -4,7 +4,11 @@ import { formatUnits } from 'viem';
 import { useETHProvider } from '../../hooks';
 import unverified from '../../icons/unverified.svg';
 import verified from '../../icons/verified.svg';
-import { TransactionSmartType, type EVMDeserializeTransactionResult } from '../../types/deserializeTx';
+import {
+  TransactionSmartType,
+  type EVMDeserializeTransactionResult,
+  type EVMTokenChange,
+} from '../../types/deserializeTx';
 import { defaultTokenIcon, ipfsToSrc, shortString } from '../../utils';
 import CopyText from '../copyText';
 import Tooltip from '../tooltip';
@@ -99,6 +103,31 @@ const TransactionDetails = ({ details }: { details: EVMDeserializeTransactionRes
     return BigInt(0);
   }, [details]);
 
+  const tokenAmountChange = useCallback(
+    (tokenItem: EVMTokenChange) => {
+      const result = formatUnits(
+        details.type === TransactionSmartType.ERC20_APPROVE ? approveTokenAmount : BigInt(tokenItem.amountChange),
+        tokenItem.decimals
+      );
+
+      if (details.type !== TransactionSmartType.ERC20_APPROVE && BigInt(tokenItem.amountChange) > BigInt(0)) {
+        return `+${result}`;
+      }
+
+      return result;
+    },
+    [approveTokenAmount, details]
+  );
+
+  const showContactAddress = useMemo(() => {
+    return (
+      details.type === TransactionSmartType.ERC20_TRANSFER ||
+      details.type === TransactionSmartType.ERC20_APPROVE ||
+      details.type === TransactionSmartType.ERC721_TRANFER ||
+      details.type === TransactionSmartType.ERC1155_TRANFER
+    );
+  }, [details]);
+
   return (
     <div className={styles.detailsCard}>
       <div className={styles.title}>{titleContent}</div>
@@ -122,12 +151,7 @@ const TransactionDetails = ({ details }: { details: EVMDeserializeTransactionRes
             <img className={styles.tokenIcon} src={tokenItem.image || defaultTokenIcon}></img>
             <div className={styles.balanceChange}>
               <span style={{ color: balanceChangeTextColor(tokenItem.amountChange) }}>
-                {formatUnits(
-                  details.type === TransactionSmartType.ERC20_APPROVE
-                    ? approveTokenAmount
-                    : BigInt(tokenItem.amountChange),
-                  tokenItem.decimals
-                )}
+                {tokenAmountChange(tokenItem)}
               </span>
               {` ${tokenItem.symbol}`}
             </div>
@@ -152,13 +176,20 @@ const TransactionDetails = ({ details }: { details: EVMDeserializeTransactionRes
       {to && (
         <div className={styles.row}>
           <div>To</div>
+          <CopyText value={to}>{shortString(to)}</CopyText>
+        </div>
+      )}
+
+      {showContactAddress && (
+        <div className={styles.row}>
+          <div>Contract</div>
           <div className={styles.toContract}>
             {details.toVerified != null && (
               <Tooltip content={details.toVerified ? 'Verified Contract' : 'Unverified Contract'}>
                 <img src={details.toVerified ? verified : unverified}></img>
               </Tooltip>
             )}
-            <CopyText value={to}>{shortString(to)}</CopyText>
+            <CopyText value={details.data.to}>{shortString(details.data.to)}</CopyText>
           </div>
         </div>
       )}

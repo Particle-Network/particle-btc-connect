@@ -156,13 +156,7 @@ export default function Home() {
       },
       onError: (error: any) => {
         console.log('🚀 ~ onSendUserOp ~ error:', error);
-        toast.error(
-          error.data?.extraMessage?.message ||
-            error.data?.extraMessage ||
-            error.details ||
-            error.message ||
-            'send user operation error'
-        );
+        toast.error(error.data?.extraMessage?.message || error.details || error.message || 'send user operation error');
       },
     }
   );
@@ -349,9 +343,9 @@ export default function Home() {
         ))}
 
         <div className="flex w-full justify-end gap-4">
-          <Checkbox isSelected={forceHideModal} onValueChange={setForceHideModal}>
+          {/* <Checkbox isSelected={forceHideModal} onValueChange={setForceHideModal}>
             Force Hide Confirm Modal
-          </Checkbox>
+          </Checkbox> */}
 
           <Checkbox isSelected={gasless} onValueChange={setGasless}>
             Gasless
