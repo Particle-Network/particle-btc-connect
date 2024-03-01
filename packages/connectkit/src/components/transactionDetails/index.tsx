@@ -23,7 +23,7 @@ const TransactionDetails = ({ details }: { details: EVMDeserializeTransactionRes
       case TransactionSmartType.ERC20_TRANSFER:
         return `Send ${details.estimatedChanges.tokens[0]?.symbol}`;
       case TransactionSmartType.ERC20_APPROVE:
-        return `Approve Spending ${details.estimatedChanges.tokens[0]?.symbol}`;
+        return 'Approve Spending';
       case TransactionSmartType.ERC721_TRANFER:
         return 'Send NFT';
       case TransactionSmartType.ERC1155_TRANFER:
