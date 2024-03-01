@@ -200,7 +200,7 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
           </CopyText>
         </div>
 
-        <div className={styles.detailsContent}>
+        <div className={styles.detailsContent + (deserializeResult ? ` ${styles.fill}` : '')}>
           {deserializeResult &&
             deserializeResult.map((details, index) => (
               <TransactionDetails key={`${details.type}-${index}`} details={details} />

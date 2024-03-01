@@ -51,7 +51,12 @@
   .detailsContent {
     width: 100%;
     overflow-y: auto;
-    max-height: 500px;
+    max-height: 0px;
+    transition: max-height 0.3s linear;
+
+    &.fill {
+      max-height: 500px;
+    }
   }
 
   .estimatedGas {
@@ -73,5 +78,8 @@
     margin-top: 16px;
     color: #ffffffa1;
     cursor: pointer;
+    &:hover {
+      opacity: 0.85;
+    }
   }
 }
