@@ -54,6 +54,10 @@
     max-height: 0px;
     transition: max-height 0.3s linear;
 
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
     &.fill {
       max-height: 500px;
     }
