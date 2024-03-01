@@ -23,7 +23,7 @@ const TransactionDetails = ({ details }: { details: EVMDeserializeTransactionRes
       case TransactionSmartType.ERC20_TRANSFER:
         return `Send ${details.estimatedChanges.tokens[0]?.symbol}`;
       case TransactionSmartType.ERC20_APPROVE:
-        return `Approve ${details.estimatedChanges.tokens[0]?.symbol}`;
+        return `Approve Spending ${details.estimatedChanges.tokens[0]?.symbol}`;
       case TransactionSmartType.ERC721_TRANFER:
         return 'Send NFT';
       case TransactionSmartType.ERC1155_TRANFER:
@@ -88,6 +88,14 @@ const TransactionDetails = ({ details }: { details: EVMDeserializeTransactionRes
     }
   }, [details]);
 
+  const approveTokenAmount = useMemo(() => {
+    if (details.type === TransactionSmartType.ERC20_APPROVE) {
+      const amount = details.data?.function?.params?.[1]?.value as string;
+      return BigInt(amount || 0);
+    }
+    return BigInt(0);
+  }, [details]);
+
   return (
     <div className={styles.detailsCard}>
       <div className={styles.title}>{titleContent}</div>
@@ -111,7 +119,12 @@ const TransactionDetails = ({ details }: { details: EVMDeserializeTransactionRes
             <img className={styles.tokenIcon} src={tokenItem.image || defaultTokenIcon}></img>
             <div className={styles.balanceChange}>
               <span style={{ color: balanceChangeTextColor(tokenItem.amountChange) }}>
-                {formatUnits(BigInt(tokenItem.amountChange), tokenItem.decimals)}
+                {formatUnits(
+                  details.type === TransactionSmartType.ERC20_APPROVE
+                    ? approveTokenAmount
+                    : BigInt(tokenItem.amountChange),
+                  tokenItem.decimals
+                )}
               </span>
               {` ${tokenItem.symbol}`}
             </div>
