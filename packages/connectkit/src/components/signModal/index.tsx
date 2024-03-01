@@ -46,7 +46,11 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
 
   useEffect(() => {
     if (open) {
-      setShowNotRemind(!txConfirm.isNotRemind());
+      const notRemind = txConfirm.isNotRemind();
+      setShowNotRemind(!notRemind);
+      if (!notRemind) {
+        setNotRemindChecked(false);
+      }
     }
   }, [open]);
 
