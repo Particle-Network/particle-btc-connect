@@ -3,6 +3,7 @@ import type { SendTransactionParams, Transaction, UserOpBundle, UserOpParams } f
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { PublicClient } from 'viem';
 import { useConnectProvider } from '../context';
+import { EthereumProvider } from '../evmSigner/provider';
 import { EventName } from '../types/eventName';
 import events from '../utils/eventUtils';
 import txConfirm from '../utils/txConfirmUtils';
@@ -118,7 +119,13 @@ export const useETHProvider = () => {
     return (smartAccount?.provider as any).publicClient as PublicClient;
   }, [smartAccount, chainId]);
 
+  const provider = useMemo(() => {
+    const ethereumProvider = new EthereumProvider(sendUserOp, smartAccount?.provider as any, evmAccount);
+    return ethereumProvider;
+  }, [evmAccount, sendUserOp, smartAccount?.provider]);
+
   return {
+    provider,
     evmAccount,
     switchChain,
     chainId,

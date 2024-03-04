@@ -103,6 +103,16 @@ export class AASignerProvider {
     return this;
   }
 
+  once(event: string, listener: any) {
+    this.events.once(event, listener);
+    return this;
+  }
+
+  off(event: string, listener: any) {
+    this.events.off(event, listener);
+    return this;
+  }
+
   emit(event: string, ...args: any[]) {
     this.events.emit(event, args);
   }

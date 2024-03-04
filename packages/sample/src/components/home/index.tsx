@@ -30,7 +30,15 @@ type TxData = {
 export default function Home() {
   const { openConnectModal, disconnect } = useConnectModal();
   const { accounts } = useAccounts();
-  const { evmAccount, chainId, switchChain, publicClient, getFeeQuotes, sendUserOp } = useETHProvider();
+  const {
+    provider: evmProvider,
+    evmAccount,
+    chainId,
+    switchChain,
+    publicClient,
+    getFeeQuotes,
+    sendUserOp,
+  } = useETHProvider();
   const { provider, getNetwork, switchNetwork, signMessage, getPublicKey, sendBitcoin, sendInscription } =
     useBTCProvider();
   const [gasless, setGasless] = useState<boolean>(false);
