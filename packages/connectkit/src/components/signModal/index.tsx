@@ -173,6 +173,11 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
   useEffect(() => {
     if (userOpBundle && nativeBalance != null && deserializeResult) {
       const nativeChange = deserializeResult
+        .filter(
+          (item) =>
+            item.estimatedChanges.natives?.[0]?.nativeChange &&
+            item.estimatedChanges.natives[0].nativeChange.startsWith('-')
+        )
         .map((item) => BigInt(item.estimatedChanges?.natives?.[0]?.nativeChange?.replace('-', '') || 0))
         .reduce((accumulator, currentValue) => accumulator + currentValue, BigInt(0));
       if (userOpBundle.userOp.paymasterAndData.length > 2) {
