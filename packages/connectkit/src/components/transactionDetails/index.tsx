@@ -138,6 +138,7 @@ const TransactionDetails = ({ details }: { details: EVMDeserializeTransactionRes
           <div key={nativeItem.address} className={styles.row}>
             <img className={styles.tokenIcon} src={nativeIcon}></img>
             <div className={styles.balanceChange} style={{ color: balanceChangeTextColor(nativeItem.nativeChange) }}>
+              {BigInt(nativeItem.nativeChange) > 0 ? '+' : undefined}
               {formatUnits(BigInt(nativeItem.nativeChange), chainInfo?.nativeCurrency.decimals || 18)}
             </div>
             <div className={styles.tokenSymbol}>{chainInfo?.nativeCurrency.symbol}</div>
@@ -176,7 +177,14 @@ const TransactionDetails = ({ details }: { details: EVMDeserializeTransactionRes
       {to && (
         <div className={styles.row}>
           <div>To</div>
-          <CopyText value={to}>{shortString(to)}</CopyText>
+          <div className={styles.toContract}>
+            {details.toVerified != null && !showContactAddress && (
+              <Tooltip content={details.toVerified ? 'Verified Contract' : 'Unverified Contract'}>
+                <img src={details.toVerified ? verified : unverified}></img>
+              </Tooltip>
+            )}
+            <CopyText value={to}>{shortString(to)}</CopyText>
+          </div>
         </div>
       )}
 
