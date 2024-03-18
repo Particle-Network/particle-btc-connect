@@ -9,6 +9,7 @@ import {
   OKXConnector,
   TokenPocketConnector,
   UnisatConnector,
+  WizzConnector,
 } from '@particle-network/btc-connectkit';
 import { useEffect } from 'react';
 import VConsole from 'vconsole';
@@ -43,7 +44,13 @@ export default function ConnectProvider({ children }: { children: React.ReactNod
           accountContracts,
         },
       }}
-      connectors={[new UnisatConnector(), new OKXConnector(), new BitgetConnector(), new TokenPocketConnector()]}
+      connectors={[
+        new UnisatConnector(),
+        new OKXConnector(),
+        new BitgetConnector(),
+        new TokenPocketConnector(),
+        new WizzConnector(),
+      ]}
     >
       {children}
     </BTCConnectProvider>
