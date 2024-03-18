@@ -2,7 +2,7 @@ import type { UserOpBundle } from '@particle-network/aa';
 import { chains } from '@particle-network/chains';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { formatEther, type Hex } from 'viem';
-import { useConnectProvider } from '../../context';
+import { useBtcVersion, useConnectProvider } from '../../context';
 import { useETHProvider } from '../../hooks';
 import checkBox from '../../icons/check_box.svg';
 import checkBoxBlank from '../../icons/check_box_blank.svg';
@@ -29,6 +29,7 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
   const [disabled, setDisabled] = useState<boolean>(false);
   const [showNotRemind, setShowNotRemind] = useState<boolean>(true);
   const [nativeBalance, setNativeBalance] = useState<bigint>();
+  const { btcVersion } = useBtcVersion();
 
   const { chainId, publicClient, evmAccount } = useETHProvider();
   const { smartAccount } = useConnectProvider();
@@ -80,7 +81,7 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
         params: [
           {
             name: 'BTC',
-            version: '1.0.0',
+            version: btcVersion,
             ownerAddress: owner,
           } as any,
           userOpBundle.userOp as any,
@@ -88,7 +89,7 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
       });
       return result;
     }
-  }, [userOpBundle, publicClient, smartAccount]);
+  }, [userOpBundle, publicClient, smartAccount, btcVersion]);
 
   useEffect(() => {
     if (userOpBundle && open) {

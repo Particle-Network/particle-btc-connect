@@ -1,6 +1,7 @@
 import { bytesToHex, publicToAddress, toBytes, toChecksumAddress, toRpcSig } from '@ethereumjs/util';
 import type { SmartAccount, UserOp } from '@particle-network/aa';
 import bitcore from 'bitcore-lib';
+import type { BtcVersion } from '../context';
 
 export const pubKeyToEVMAddress = (pubKey: string) => {
   const address = toChecksumAddress(bytesToHex(publicToAddress(toBytes(`0x${pubKey}`), true)));
@@ -21,10 +22,14 @@ export function caculateNativeFee(userOp: UserOp): bigint {
   );
 }
 
-export const getBTCAAAddress = async (smartAccount: SmartAccount, btcAddress: string): Promise<string> => {
+export const getBTCAAAddress = async (
+  smartAccount: SmartAccount,
+  btcAddress: string,
+  btcVersion: BtcVersion
+): Promise<string> => {
   const addresses = await smartAccount.provider.request({ method: 'eth_accounts' });
   const owner = addresses[0];
-  const localKey = `particle_BTC_1.0.0_${owner}`;
+  const localKey = `particle_BTC_${btcVersion}_${owner}`;
   if (typeof window !== 'undefined' && localStorage) {
     const localAA = localStorage.getItem(localKey);
     if (localAA) {
@@ -39,7 +44,7 @@ export const getBTCAAAddress = async (smartAccount: SmartAccount, btcAddress: st
     params: [
       {
         name: 'BTC',
-        version: '1.0.0',
+        version: btcVersion,
         btcPublicKey,
         btcAddress,
       } as any,
