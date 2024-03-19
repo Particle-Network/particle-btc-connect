@@ -2,16 +2,22 @@ import { SmartAccount, type IEthereumProvider } from '@particle-network/aa';
 import { PolygonMumbai } from '@particle-network/chains';
 import { create } from 'zustand';
 
+export type BtcVersion = '1.0.0' | '2.0.0';
+
 type State = {
   smartAccount: SmartAccount | undefined;
+  btcVersion: BtcVersion;
 };
 
 type Actions = {
   setProvider: (provider: IEthereumProvider) => void;
+  setBtcVersion: (version: BtcVersion) => void;
 };
 
 const useSmartAccount = create<State & Actions>((set) => ({
   smartAccount: undefined,
+  btcVersion: '1.0.0',
+  setBtcVersion: (version: BtcVersion) => set({ btcVersion: version }),
   setProvider: (provider: IEthereumProvider) =>
     set((state) => {
       if (!state.smartAccount) {

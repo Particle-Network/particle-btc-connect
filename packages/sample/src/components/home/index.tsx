@@ -5,6 +5,7 @@ import bitcoinIcon from '@/assets/bitcoin.png';
 import particleLogo from '@/assets/particle-logo.svg';
 import removeIcon from '@/assets/remove.svg';
 import { accountContracts } from '@/config';
+import useSmartAccount from '@/store/useSmartAccount';
 import { Button, Checkbox, Divider, Input, Select, SelectItem } from '@nextui-org/react';
 import {
   useAccounts,
@@ -14,6 +15,7 @@ import {
   useETHProvider,
   type BaseConnector,
 } from '@particle-network/btc-connectkit';
+import type { BtcVersion } from '@particle-network/btc-connectkit/dist/context';
 import { chains } from '@particle-network/chains';
 import { useRequest } from 'ahooks';
 import Image from 'next/image';
@@ -57,6 +59,8 @@ export default function Home() {
       data: '0x',
     },
   ]);
+
+  const { btcVersion, setBtcVersion } = useSmartAccount();
 
   const onGetNetwork = async () => {
     try {
@@ -135,6 +139,7 @@ export default function Home() {
         await switchChain(chainId);
       } catch (error: any) {
         toast.error(error.message || 'switch chain error');
+        console.log('🚀 ~ onSwitchChain ~ error:', error);
       }
     }
   };
@@ -207,6 +212,15 @@ export default function Home() {
     setTxDatas([...txDatas]);
   };
 
+  useEffect(() => {
+    if (btcVersion && chainId) {
+      const supportChains = accountContracts.BTC.find((item) => item.version === btcVersion)?.chainIds || [];
+      if (!supportChains.includes(chainId)) {
+        switchChain(supportChains[0]);
+      }
+    }
+  }, [btcVersion, chainId, switchChain]);
+
   return (
     <div className="container mx-auto flex h-full flex-col items-center gap-6 overflow-auto py-10">
       <Image src={particleLogo} alt="" className=""></Image>
@@ -253,7 +267,27 @@ export default function Home() {
 
       <div className="mt-12 flex h-auto w-[40rem] max-w-full flex-col gap-4 rounded-lg p-4 shadow-md">
         <div className="mb-4 text-2xl font-bold">Bitcoin</div>
-
+        <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+          <Select
+            label="Btc Version"
+            size="sm"
+            selectedKeys={[btcVersion]}
+            onChange={(event) => {
+              const version = event?.target?.value as BtcVersion;
+              localStorage.setItem('btcVersion', version);
+              setBtcVersion(version);
+            }}
+            isRequired
+          >
+            {['1.0.0', '2.0.0'].map((version) => {
+              return (
+                <SelectItem key={version} value={version}>
+                  {version}
+                </SelectItem>
+              );
+            })}
+          </Select>
+        </div>
         <div className="overflow-hidden text-ellipsis whitespace-nowrap">Addresses: {accounts.join(', ')}</div>
 
         <Button color="primary" onClick={onGetNetwork}>
@@ -309,7 +343,7 @@ export default function Home() {
           onChange={onSwitchChain}
           isRequired
         >
-          {accountContracts.BTC[0].chainIds.map((chainId) => {
+          {(accountContracts.BTC.find((item) => item.version === btcVersion)?.chainIds || [])?.map?.((chainId) => {
             const chain = chains.getEVMChainInfoById(chainId)!;
             return (
               <SelectItem key={chain.id} value={chain.id}>
