@@ -69,7 +69,7 @@ export const ConnectProvider = ({
   const [accounts, setAccounts] = useState<string[]>([]);
   const [evmAccount, setEVMAccount] = useState<string>();
 
-  const [btcVersion] = useState<BtcVersion>(options.btcVersion || '1.0.0');
+  const [btcVersion, setBtcVersion] = useState<BtcVersion>(options.btcVersion || '1.0.0');
 
   useEffect(() => {
     const id = localStorage.getItem('current-connector-id');
@@ -148,7 +148,11 @@ export const ConnectProvider = ({
       return undefined;
     }
 
-    if (!(window as any).__bitcoinSmartAccount) {
+    if (
+      !(window as any).__bitcoinSmartAccount ||
+      ((window as any)?.__bitcoinSmartAccount &&
+        (window as any)?.__bitcoinSmartAccount.smartAccountContract.version !== btcVersion)
+    ) {
       const smartAccount = new SmartAccount(
         new AASignerProvider(evmSupportChainIds, options.projectId, options.clientKey) as any,
         options
@@ -227,6 +231,10 @@ export const ConnectProvider = ({
     }
     setConnectorId(undefined);
   }, [connector]);
+
+  useEffect(() => {
+    setBtcVersion(options.btcVersion || '1.0.0');
+  }, [options.btcVersion]);
 
   useEffect(() => {
     const supportChains = evmSupportChainIds.map((id) => chains.getEVMChainInfoById(id));

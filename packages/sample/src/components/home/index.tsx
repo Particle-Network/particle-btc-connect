@@ -212,6 +212,15 @@ export default function Home() {
     setTxDatas([...txDatas]);
   };
 
+  useEffect(() => {
+    if (btcVersion && chainId) {
+      const supportChains = accountContracts.BTC.find((item) => item.version === btcVersion)?.chainIds || [];
+      if (!supportChains.includes(chainId)) {
+        switchChain(supportChains[0]);
+      }
+    }
+  }, [btcVersion, chainId, switchChain]);
+
   return (
     <div className="container mx-auto flex h-full flex-col items-center gap-6 overflow-auto py-10">
       <Image src={particleLogo} alt="" className=""></Image>
@@ -260,7 +269,7 @@ export default function Home() {
         <div className="mb-4 text-2xl font-bold">Bitcoin</div>
         <div className="overflow-hidden text-ellipsis whitespace-nowrap">
           <Select
-            label="Switch Btc Version"
+            label="Btc Version"
             size="sm"
             selectedKeys={[btcVersion]}
             onChange={(event) => {

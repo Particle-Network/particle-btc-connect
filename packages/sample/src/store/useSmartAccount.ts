@@ -16,7 +16,7 @@ type Actions = {
 
 const useSmartAccount = create<State & Actions>((set) => ({
   smartAccount: undefined,
-  btcVersion: '2.0.0',
+  btcVersion: '1.0.0',
   setBtcVersion: (version: BtcVersion) => set({ btcVersion: version }),
   setProvider: (provider: IEthereumProvider) =>
     set((state) => {
