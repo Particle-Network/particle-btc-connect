@@ -266,26 +266,7 @@ export default function Home() {
 
       <div className="mt-12 flex h-auto w-[40rem] max-w-full flex-col gap-4 rounded-lg p-4 shadow-md">
         <div className="mb-4 text-2xl font-bold">Bitcoin</div>
-        <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-          <Select
-            label="Btc Version"
-            size="sm"
-            selectedKeys={[BTCVersion]}
-            onChange={(event) => {
-              const version = event?.target?.value as string;
-              setBTCVersion(version);
-            }}
-            isRequired
-          >
-            {BTCVersionList.map((version) => {
-              return (
-                <SelectItem key={version} value={version}>
-                  {version}
-                </SelectItem>
-              );
-            })}
-          </Select>
-        </div>
+
         <div className="overflow-hidden text-ellipsis whitespace-nowrap">Addresses: {accounts.join(', ')}</div>
 
         <Button color="primary" onClick={onGetNetwork}>
@@ -331,7 +312,28 @@ export default function Home() {
 
       <div className="relative mb-20 mt-20 flex h-auto w-[40rem] max-w-full flex-col gap-4 rounded-lg p-4 shadow-md">
         <div className="mb-4 text-2xl font-bold">EVM</div>
-
+        <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+          <Select
+            label="BTC Contract Version"
+            size="sm"
+            selectedKeys={[BTCVersion]}
+            onChange={(event) => {
+              const version = event?.target?.value as string;
+              if (version) {
+                setBTCVersion(version);
+              }
+            }}
+            isRequired
+          >
+            {BTCVersionList.map((version) => {
+              return (
+                <SelectItem key={version} value={version}>
+                  {version}
+                </SelectItem>
+              );
+            })}
+          </Select>
+        </div>
         <div className="overflow-hidden text-ellipsis whitespace-nowrap">Address: {evmAccount}</div>
         <div className="overflow-hidden text-ellipsis whitespace-nowrap">ChainId: {chainId}</div>
         <Select
