@@ -8,11 +8,11 @@ import { type BaseConnector } from '../connector/base';
 import { AASignerProvider } from '../evmSigner';
 import useModalStateValue from '../hooks/useModalStateValue';
 import { EventName } from '../types/eventName';
+import { checkBtcVersion } from '../utils';
 import { getBTCAAAddress } from '../utils/ethereumUtils';
 import events from '../utils/eventUtils';
 import txConfirm from '../utils/txConfirmUtils';
 
-export type BtcVersion = '1.0.0' | '2.0.0';
 interface GlobalState {
   connectorId?: string;
   setConnectorId: (connectorId?: string) => void;
@@ -30,7 +30,9 @@ interface GlobalState {
   switchNetwork: (network: 'livenet' | 'testnet') => Promise<void>;
   getNetwork: () => Promise<'livenet' | 'testnet'>;
   sendBitcoin: (toAddress: string, satoshis: number, options?: { feeRate: number }) => Promise<string>;
-  btcVersion: BtcVersion;
+  btcVersion: string;
+  setBtcVersion: (version: string) => void;
+  btcVersionList: string[];
 }
 
 const ConnectContext = createContext<GlobalState>({} as any);
@@ -40,7 +42,6 @@ interface ConnectOptions {
   clientKey: string;
   appId: string;
   aaOptions: AAOptions;
-  btcVersion?: BtcVersion;
   walletOptions?: Omit<WalletOption, 'erc4337' | 'customStyle'> & {
     customStyle?: Omit<WalletOption['customStyle'], 'supportChains' | 'evmSupportWalletConnect'>;
   };
@@ -68,8 +69,23 @@ export const ConnectProvider = ({
   const [connectorId, setConnectorId] = useState<string>();
   const [accounts, setAccounts] = useState<string[]>([]);
   const [evmAccount, setEVMAccount] = useState<string>();
+  const btcVersionKey = 'particleBtcVersion';
+  const [btcVersion, _setBtcVersion] = useState<string>('1.0.0');
 
-  const [btcVersion, setBtcVersion] = useState<BtcVersion>(options.btcVersion || '1.0.0');
+  const setBtcVersion = useCallback(
+    (version: string) => {
+      if (!checkBtcVersion(options.aaOptions.accountContracts, version)) {
+        throw new Error(`Invalid btc version: ${version}`);
+      }
+      localStorage.setItem(btcVersionKey, version);
+      _setBtcVersion(version);
+    },
+    [options.aaOptions.accountContracts]
+  );
+
+  const btcVersionList = useMemo(() => {
+    return options.aaOptions.accountContracts['BTC'].map((item) => item.version) as string[];
+  }, [options.aaOptions.accountContracts]);
 
   useEffect(() => {
     const id = localStorage.getItem('current-connector-id');
@@ -233,8 +249,12 @@ export const ConnectProvider = ({
   }, [connector]);
 
   useEffect(() => {
-    setBtcVersion(options.btcVersion || '1.0.0');
-  }, [options.btcVersion]);
+    let btcVersion = localStorage.getItem(btcVersionKey) || '1.0.0';
+    if (!checkBtcVersion(options.aaOptions.accountContracts, btcVersion as string)) {
+      btcVersion = options.aaOptions.accountContracts['BTC'][0].version;
+    }
+    setBtcVersion(btcVersion as string);
+  }, [options.aaOptions.accountContracts, setBtcVersion]);
 
   useEffect(() => {
     const supportChains = evmSupportChainIds.map((id) => chains.getEVMChainInfoById(id));
@@ -317,6 +337,8 @@ export const ConnectProvider = ({
         switchNetwork,
         sendBitcoin,
         btcVersion,
+        setBtcVersion,
+        btcVersionList,
       }}
     >
       {children}
@@ -329,11 +351,4 @@ export const ConnectProvider = ({
 export const useConnectProvider = () => {
   const context = useContext(ConnectContext);
   return context;
-};
-
-export const useBtcVersion = () => {
-  const context = useContext(ConnectContext);
-  return {
-    btcVersion: context.btcVersion,
-  };
 };

@@ -5,17 +5,17 @@ import bitcoinIcon from '@/assets/bitcoin.png';
 import particleLogo from '@/assets/particle-logo.svg';
 import removeIcon from '@/assets/remove.svg';
 import { accountContracts } from '@/config';
-import useSmartAccount from '@/store/useSmartAccount';
 import { Button, Checkbox, Divider, Input, Select, SelectItem } from '@nextui-org/react';
 import {
   useAccounts,
   useBTCProvider,
+  useBtcVersion,
   useConnectModal,
   useConnector,
   useETHProvider,
   type BaseConnector,
 } from '@particle-network/btc-connectkit';
-import type { BtcVersion } from '@particle-network/btc-connectkit/dist/context';
+
 import { chains } from '@particle-network/chains';
 import { useRequest } from 'ahooks';
 import Image from 'next/image';
@@ -59,8 +59,7 @@ export default function Home() {
       data: '0x',
     },
   ]);
-
-  const { btcVersion, setBtcVersion } = useSmartAccount();
+  const { btcVersionList, btcVersion, setBtcVersion } = useBtcVersion();
 
   const onGetNetwork = async () => {
     try {
@@ -273,13 +272,12 @@ export default function Home() {
             size="sm"
             selectedKeys={[btcVersion]}
             onChange={(event) => {
-              const version = event?.target?.value as BtcVersion;
-              localStorage.setItem('btcVersion', version);
+              const version = event?.target?.value as string;
               setBtcVersion(version);
             }}
             isRequired
           >
-            {['1.0.0', '2.0.0'].map((version) => {
+            {btcVersionList.map((version) => {
               return (
                 <SelectItem key={version} value={version}>
                   {version}

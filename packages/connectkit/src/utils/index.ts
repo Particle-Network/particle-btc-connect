@@ -1,3 +1,5 @@
+import type { AAOptions } from '@particle-network/aa';
+
 export function shortString(str: any): string {
   if (Array.isArray(str)) {
     str = '[' + str.toString() + ']';
@@ -55,4 +57,11 @@ export const ipfsToSrc = (ipfs: string) => {
   }
 
   return `https://ipfs.particle.network/${encodeURI(ipfs.slice(7))}`;
+};
+
+export const checkBtcVersion = (accountContracts: AAOptions['accountContracts'], version: string) => {
+  if (!accountContracts['BTC']) {
+    return false;
+  }
+  return accountContracts['BTC'].some((item) => item.version === version);
 };
