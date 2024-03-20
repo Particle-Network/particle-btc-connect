@@ -9,7 +9,7 @@ import { Button, Checkbox, Divider, Input, Select, SelectItem } from '@nextui-or
 import {
   useAccounts,
   useBTCProvider,
-  useBtcVersion,
+  useBTCVersion,
   useConnectModal,
   useConnector,
   useETHProvider,
@@ -59,7 +59,7 @@ export default function Home() {
       data: '0x',
     },
   ]);
-  const { btcVersionList, btcVersion, setBtcVersion } = useBtcVersion();
+  const { BTCVersionList, BTCVersion, setBTCVersion } = useBTCVersion();
 
   const onGetNetwork = async () => {
     try {
@@ -212,13 +212,13 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (btcVersion && chainId) {
-      const supportChains = accountContracts.BTC.find((item) => item.version === btcVersion)?.chainIds || [];
+    if (BTCVersion && chainId) {
+      const supportChains = accountContracts.BTC.find((item) => item.version === BTCVersion)?.chainIds || [];
       if (!supportChains.includes(chainId)) {
         switchChain(supportChains[0]);
       }
     }
-  }, [btcVersion, chainId, switchChain]);
+  }, [BTCVersion, chainId, switchChain]);
 
   return (
     <div className="container mx-auto flex h-full flex-col items-center gap-6 overflow-auto py-10">
@@ -270,14 +270,14 @@ export default function Home() {
           <Select
             label="Btc Version"
             size="sm"
-            selectedKeys={[btcVersion]}
+            selectedKeys={[BTCVersion]}
             onChange={(event) => {
               const version = event?.target?.value as string;
-              setBtcVersion(version);
+              setBTCVersion(version);
             }}
             isRequired
           >
-            {btcVersionList.map((version) => {
+            {BTCVersionList.map((version) => {
               return (
                 <SelectItem key={version} value={version}>
                   {version}
@@ -341,7 +341,7 @@ export default function Home() {
           onChange={onSwitchChain}
           isRequired
         >
-          {(accountContracts.BTC.find((item) => item.version === btcVersion)?.chainIds || [])?.map?.((chainId) => {
+          {(accountContracts.BTC.find((item) => item.version === BTCVersion)?.chainIds || [])?.map?.((chainId) => {
             const chain = chains.getEVMChainInfoById(chainId)!;
             return (
               <SelectItem key={chain.id} value={chain.id}>

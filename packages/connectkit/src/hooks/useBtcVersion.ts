@@ -1,10 +1,10 @@
 import { useConnectProvider } from '../context';
 
-export const useBtcVersion = () => {
-  const { btcVersionList, btcVersion, setBtcVersion } = useConnectProvider();
+export const useBTCVersion = () => {
+  const { BTCVersionList, BTCVersion, setBTCVersion } = useConnectProvider();
   return {
-    btcVersionList,
-    btcVersion,
-    setBtcVersion,
+    BTCVersionList,
+    BTCVersion,
+    setBTCVersion,
   };
 };

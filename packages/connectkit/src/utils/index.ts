@@ -59,7 +59,7 @@ export const ipfsToSrc = (ipfs: string) => {
   return `https://ipfs.particle.network/${encodeURI(ipfs.slice(7))}`;
 };
 
-export const checkBtcVersion = (accountContracts: AAOptions['accountContracts'], version: string) => {
+export const checkBTCVersion = (accountContracts: AAOptions['accountContracts'], version: string) => {
   if (!accountContracts['BTC']) {
     return false;
   }

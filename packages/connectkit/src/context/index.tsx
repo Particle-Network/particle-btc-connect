@@ -8,7 +8,7 @@ import { type BaseConnector } from '../connector/base';
 import { AASignerProvider } from '../evmSigner';
 import useModalStateValue from '../hooks/useModalStateValue';
 import { EventName } from '../types/eventName';
-import { checkBtcVersion } from '../utils';
+import { checkBTCVersion } from '../utils';
 import { getBTCAAAddress } from '../utils/ethereumUtils';
 import events from '../utils/eventUtils';
 import txConfirm from '../utils/txConfirmUtils';
@@ -30,9 +30,9 @@ interface GlobalState {
   switchNetwork: (network: 'livenet' | 'testnet') => Promise<void>;
   getNetwork: () => Promise<'livenet' | 'testnet'>;
   sendBitcoin: (toAddress: string, satoshis: number, options?: { feeRate: number }) => Promise<string>;
-  btcVersion: string;
-  setBtcVersion: (version: string) => void;
-  btcVersionList: string[];
+  BTCVersion: string;
+  setBTCVersion: (version: string) => void;
+  BTCVersionList: string[];
 }
 
 const ConnectContext = createContext<GlobalState>({} as any);
@@ -69,21 +69,21 @@ export const ConnectProvider = ({
   const [connectorId, setConnectorId] = useState<string>();
   const [accounts, setAccounts] = useState<string[]>([]);
   const [evmAccount, setEVMAccount] = useState<string>();
-  const btcVersionKey = 'particleBtcVersion';
-  const [btcVersion, _setBtcVersion] = useState<string>('1.0.0');
+  const BTCVersionKey = 'particleBTCVersion';
+  const [BTCVersion, _setBTCVersion] = useState<string>('1.0.0');
 
-  const setBtcVersion = useCallback(
+  const setBTCVersion = useCallback(
     (version: string) => {
-      if (!checkBtcVersion(options.aaOptions.accountContracts, version)) {
+      if (!checkBTCVersion(options.aaOptions.accountContracts, version)) {
         throw new Error(`Invalid btc version: ${version}`);
       }
-      localStorage.setItem(btcVersionKey, version);
-      _setBtcVersion(version);
+      localStorage.setItem(BTCVersionKey, version);
+      _setBTCVersion(version);
     },
     [options.aaOptions.accountContracts]
   );
 
-  const btcVersionList = useMemo(() => {
+  const BTCVersionList = useMemo(() => {
     return options.aaOptions.accountContracts['BTC'].map((item) => item.version) as string[];
   }, [options.aaOptions.accountContracts]);
 
@@ -96,7 +96,7 @@ export const ConnectProvider = ({
 
   const evmSupportChainIds = useMemo(() => {
     let chainIds = options.aaOptions.accountContracts['BTC']
-      .filter((item) => item.version === btcVersion)
+      .filter((item) => item.version === BTCVersion)
       .map((item) => item.chainIds)
       .reduce((a, b) => {
         a.push(...b);
@@ -104,7 +104,7 @@ export const ConnectProvider = ({
       }, []);
     chainIds = Array.from(new Set(chainIds));
     return chainIds;
-  }, [options.aaOptions.accountContracts, btcVersion]);
+  }, [options.aaOptions.accountContracts, BTCVersion]);
 
   const connector = useMemo(() => {
     return connectors.find((item) => item.metadata.id === connectorId);
@@ -167,7 +167,7 @@ export const ConnectProvider = ({
     if (
       !(window as any).__bitcoinSmartAccount ||
       ((window as any)?.__bitcoinSmartAccount &&
-        (window as any)?.__bitcoinSmartAccount.smartAccountContract.version !== btcVersion)
+        (window as any)?.__bitcoinSmartAccount.smartAccountContract.version !== BTCVersion)
     ) {
       const smartAccount = new SmartAccount(
         new AASignerProvider(evmSupportChainIds, options.projectId, options.clientKey) as any,
@@ -175,18 +175,18 @@ export const ConnectProvider = ({
       );
       smartAccount.setSmartAccountContract({
         name: 'BTC',
-        version: btcVersion,
+        version: BTCVersion,
       });
       (window as any).__bitcoinSmartAccount = smartAccount;
     }
     (window as any).__bitcoinSmartAccount.provider.getPublicKey = getPublicKey;
     (window as any).__bitcoinSmartAccount.provider.personalSign = signMessage;
     return (window as any).__bitcoinSmartAccount as SmartAccount;
-  }, [options, evmSupportChainIds, getPublicKey, signMessage, btcVersion]);
+  }, [options, evmSupportChainIds, getPublicKey, signMessage, BTCVersion]);
 
   useEffect(() => {
     if (accounts.length > 0 && smartAccount) {
-      getBTCAAAddress(smartAccount, accounts[0], btcVersion)
+      getBTCAAAddress(smartAccount, accounts[0], BTCVersion)
         .then((res) => {
           setEVMAccount(res);
         })
@@ -198,7 +198,7 @@ export const ConnectProvider = ({
     } else {
       setEVMAccount(undefined);
     }
-  }, [accounts, smartAccount, getPublicKey, btcVersion]);
+  }, [accounts, smartAccount, getPublicKey, BTCVersion]);
 
   const requestAccount = useCallback(
     async (connector: BaseConnector) => {
@@ -249,12 +249,12 @@ export const ConnectProvider = ({
   }, [connector]);
 
   useEffect(() => {
-    let btcVersion = localStorage.getItem(btcVersionKey) || '1.0.0';
-    if (!checkBtcVersion(options.aaOptions.accountContracts, btcVersion as string)) {
-      btcVersion = options.aaOptions.accountContracts['BTC'][0].version;
+    let BTCVersion = localStorage.getItem(BTCVersionKey) || '1.0.0';
+    if (!checkBTCVersion(options.aaOptions.accountContracts, BTCVersion as string)) {
+      BTCVersion = options.aaOptions.accountContracts['BTC'][0].version;
     }
-    setBtcVersion(btcVersion as string);
-  }, [options.aaOptions.accountContracts, setBtcVersion]);
+    setBTCVersion(BTCVersion as string);
+  }, [options.aaOptions.accountContracts, setBTCVersion]);
 
   useEffect(() => {
     const supportChains = evmSupportChainIds.map((id) => chains.getEVMChainInfoById(id));
@@ -271,7 +271,7 @@ export const ConnectProvider = ({
         ...options.walletOptions,
         erc4337: {
           name: 'BTC',
-          version: btcVersion,
+          version: BTCVersion,
         },
         customStyle: {
           ...options.walletOptions?.customStyle,
@@ -281,7 +281,7 @@ export const ConnectProvider = ({
       }
     );
     console.log('walletEntryPlugin init');
-  }, [options, evmSupportChainIds, btcVersion]);
+  }, [options, evmSupportChainIds, BTCVersion]);
 
   useEffect(() => {
     if (smartAccount) {
@@ -336,9 +336,9 @@ export const ConnectProvider = ({
         getNetwork,
         switchNetwork,
         sendBitcoin,
-        btcVersion,
-        setBtcVersion,
-        btcVersionList,
+        BTCVersion,
+        setBTCVersion,
+        BTCVersionList,
       }}
     >
       {children}
