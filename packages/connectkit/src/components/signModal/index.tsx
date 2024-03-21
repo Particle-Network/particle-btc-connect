@@ -74,23 +74,23 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
   }, [onOpen, setUserOpBundle]);
 
   const deserializeUserOp = useCallback(async () => {
-    if (userOpBundle && publicClient && smartAccount) {
+    if (userOpBundle && smartAccount) {
       const addresses = await smartAccount.provider.request({ method: 'eth_accounts' });
       const owner = addresses[0];
-      const result = await publicClient.request({
-        method: 'particle_aa_deserializeUserOp' as any,
+      const result = await smartAccount.sendRpc({
+        method: 'particle_aa_deserializeUserOp',
         params: [
           {
             name: 'BTC',
             version: btcContractVersion,
             ownerAddress: owner,
-          } as any,
-          userOpBundle.userOp as any,
+          },
+          userOpBundle.userOp,
         ],
       });
       return result;
     }
-  }, [userOpBundle, publicClient, smartAccount, btcContractVersion]);
+  }, [userOpBundle, smartAccount, btcContractVersion]);
 
   useEffect(() => {
     if (userOpBundle && open) {

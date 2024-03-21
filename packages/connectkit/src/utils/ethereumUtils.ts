@@ -37,16 +37,15 @@ export const getBTCAAAddress = async (
   }
 
   const btcPublicKey = await (smartAccount.provider as any).getPublicKey();
-  const publicClient = (smartAccount.provider as any).publicClient;
-  const accountInfo = await publicClient.request({
-    method: 'particle_aa_getBTCAccount' as any,
+  const accountInfo = await smartAccount.sendRpc({
+    method: 'particle_aa_getBTCAccount',
     params: [
       {
         name: 'BTC',
         version: BTCVersion,
         btcPublicKey,
         btcAddress,
-      } as any,
+      },
     ],
   });
   const address = (accountInfo as any)?.[0]?.smartAccountAddress;
