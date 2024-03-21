@@ -30,6 +30,9 @@ export default function ConnectProvider({ children }: { children: React.ReactNod
         aaOptions: {
           accountContracts,
         },
+        rpcUrls: {
+          686868: 'https://testnet-rpc.merlinchain.io',
+        },
       }}
       connectors={[
         new UnisatConnector(),

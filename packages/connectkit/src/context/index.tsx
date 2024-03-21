@@ -42,6 +42,7 @@ interface ConnectOptions {
   clientKey: string;
   appId: string;
   aaOptions: AAOptions;
+  rpcUrls?: Record<number, string>;
   walletOptions?: Omit<WalletOption, 'erc4337' | 'customStyle'> & {
     customStyle?: Omit<WalletOption['customStyle'], 'supportChains' | 'evmSupportWalletConnect'>;
   };
@@ -170,7 +171,7 @@ export const ConnectProvider = ({
         (window as any)?.__bitcoinSmartAccount.smartAccountContract.version !== BTCVersion)
     ) {
       const smartAccount = new SmartAccount(
-        new AASignerProvider(evmSupportChainIds, options.projectId, options.clientKey) as any,
+        new AASignerProvider(evmSupportChainIds, options.projectId, options.clientKey, options.rpcUrls) as any,
         options
       );
       smartAccount.setSmartAccountContract({

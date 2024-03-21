@@ -1,5 +1,6 @@
 import { intToHex } from '@ethereumjs/util';
 import type { RequestArguments } from '@particle-network/aa';
+import { chains } from '@particle-network/chains';
 import { EventEmitter } from 'events';
 import {
   InvalidParamsRpcError,
@@ -18,7 +19,8 @@ export class AASignerProvider {
   constructor(
     public supportChainIds: number[],
     public projectId: string,
-    public clientKey: string
+    public clientKey: string,
+    public rpcUrls: Record<number, string> | undefined
   ) {
     this.events = new EventEmitter();
     this.events.setMaxListeners(100);
@@ -118,14 +120,11 @@ export class AASignerProvider {
   }
 
   getPublicClient = () => {
-    let rpcDomain = 'https://rpc.particle.network';
-    if (typeof window !== 'undefined' && (window as any).__PARTICLE_ENVIRONMENT__ === 'development') {
-      rpcDomain = 'https://rpc-debug.particle.network';
-    }
+    const rpcUrl = this?.rpcUrls?.[this.chainId] || chains.getEVMChainInfoById(this.chainId || 1)?.rpcUrl;
+    console.log('rpcUrl', rpcUrl);
+
     return createPublicClient({
-      transport: http(
-        `${rpcDomain}/evm-chain?chainId=${this.chainId}&projectUuid=${this.projectId}&projectKey=${this.clientKey}`
-      ),
+      transport: http(rpcUrl),
     });
   };
 }
