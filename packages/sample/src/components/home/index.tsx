@@ -8,8 +8,8 @@ import { accountContracts } from '@/config';
 import { Button, Checkbox, Divider, Input, Select, SelectItem } from '@nextui-org/react';
 import {
   useAccounts,
+  useBTCContractVersion,
   useBTCProvider,
-  useBTCVersion,
   useConnectModal,
   useConnector,
   useETHProvider,
@@ -59,7 +59,7 @@ export default function Home() {
       data: '0x',
     },
   ]);
-  const { BTCVersionList, BTCVersion, setBTCVersion } = useBTCVersion();
+  const { btcContractVersionList, btcContractVersion, setBTCContractVersion } = useBTCContractVersion();
 
   const onGetNetwork = async () => {
     try {
@@ -212,13 +212,13 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (BTCVersion && chainId) {
-      const supportChains = accountContracts.BTC.find((item) => item.version === BTCVersion)?.chainIds || [];
+    if (btcContractVersion && chainId) {
+      const supportChains = accountContracts.BTC.find((item) => item.version === btcContractVersion)?.chainIds || [];
       if (!supportChains.includes(chainId)) {
         switchChain(supportChains[0]);
       }
     }
-  }, [BTCVersion, chainId, switchChain]);
+  }, [btcContractVersion, chainId, switchChain]);
 
   return (
     <div className="container mx-auto flex h-full flex-col items-center gap-6 overflow-auto py-10">
@@ -316,16 +316,16 @@ export default function Home() {
           <Select
             label="BTC Contract Version"
             size="sm"
-            selectedKeys={[BTCVersion]}
+            selectedKeys={[btcContractVersion]}
             onChange={(event) => {
               const version = event?.target?.value as string;
               if (version) {
-                setBTCVersion(version);
+                setBTCContractVersion(version);
               }
             }}
             isRequired
           >
-            {BTCVersionList.map((version) => {
+            {btcContractVersionList.map((version) => {
               return (
                 <SelectItem key={version} value={version}>
                   {version}
@@ -343,14 +343,16 @@ export default function Home() {
           onChange={onSwitchChain}
           isRequired
         >
-          {(accountContracts.BTC.find((item) => item.version === BTCVersion)?.chainIds || [])?.map?.((chainId) => {
-            const chain = chains.getEVMChainInfoById(chainId)!;
-            return (
-              <SelectItem key={chain.id} value={chain.id}>
-                {chain.fullname}
-              </SelectItem>
-            );
-          })}
+          {(accountContracts.BTC.find((item) => item.version === btcContractVersion)?.chainIds || [])?.map?.(
+            (chainId) => {
+              const chain = chains.getEVMChainInfoById(chainId)!;
+              return (
+                <SelectItem key={chain.id} value={chain.id}>
+                  {chain.fullname}
+                </SelectItem>
+              );
+            }
+          )}
         </Select>
 
         <Divider className="my-4"></Divider>

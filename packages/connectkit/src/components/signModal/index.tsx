@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { formatEther, type Hex } from 'viem';
 import { useConnectProvider } from '../../context';
 import { useETHProvider } from '../../hooks';
-import { useBTCVersion } from '../../hooks/useBTCVersion';
+import { useBTCContractVersion } from '../../hooks/useBTCContractVersion';
 import checkBox from '../../icons/check_box.svg';
 import checkBoxBlank from '../../icons/check_box_blank.svg';
 import close from '../../icons/close.svg';
@@ -30,7 +30,7 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
   const [disabled, setDisabled] = useState<boolean>(false);
   const [showNotRemind, setShowNotRemind] = useState<boolean>(true);
   const [nativeBalance, setNativeBalance] = useState<bigint>();
-  const { BTCVersion } = useBTCVersion();
+  const { btcContractVersion } = useBTCContractVersion();
 
   const { chainId, publicClient, evmAccount } = useETHProvider();
   const { smartAccount } = useConnectProvider();
@@ -82,7 +82,7 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
         params: [
           {
             name: 'BTC',
-            version: BTCVersion,
+            version: btcContractVersion,
             ownerAddress: owner,
           } as any,
           userOpBundle.userOp as any,
@@ -90,7 +90,7 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
       });
       return result;
     }
-  }, [userOpBundle, publicClient, smartAccount, BTCVersion]);
+  }, [userOpBundle, publicClient, smartAccount, btcContractVersion]);
 
   useEffect(() => {
     if (userOpBundle && open) {
