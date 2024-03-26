@@ -71,7 +71,9 @@ export const ConnectProvider = ({
   const [accounts, setAccounts] = useState<string[]>([]);
   const [evmAccount, setEVMAccount] = useState<string>();
   const BTCVersionKey = 'particleBTCVersion';
-  const [btcContractVersion, _setBTCContractVersion] = useState<string>('1.0.0');
+  const [btcContractVersion, _setBTCContractVersion] = useState<string>(
+    options.aaOptions.accountContracts['BTC']?.[0].version || '1.0.0'
+  );
 
   const setBTCContractVersion = useCallback(
     (version: string) => {
