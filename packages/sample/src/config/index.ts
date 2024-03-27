@@ -5,7 +5,7 @@ export const accountContracts = {
       version: '1.0.0',
     },
     {
-      chainIds: [200810, 3636, 2442, 1123],
+      chainIds: [200810, 3636, 2442, 1123, 5000, 2648],
       version: '2.0.0',
     },
   ],

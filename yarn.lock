@@ -1649,9 +1649,9 @@
     uuid "^8.3.2"
 
 "@particle-network/chains@*":
-  version "1.3.24"
-  resolved "https://registry.npmjs.org/@particle-network/chains/-/chains-1.3.24.tgz#bc41ce2d0a17d777db7a6cae2f8a239e4c9270d6"
-  integrity sha512-UNwQ9LrAeMJSCpHEP2xGwlhatUJHeHvcDwIDNOjsbd7XjdbLGJnONcS379eeEFX2dnRriuxpUAKIyweXkzul4Q==
+  version "1.3.26"
+  resolved "https://registry.npmjs.org/@particle-network/chains/-/chains-1.3.26.tgz#5f76360cd0e3a039c6323c07a838da23f865ba5d"
+  integrity sha512-WDRbPDpTsRfa6shMdeYVDWDMmgYksCPOuhUIyNejQx/99YEjT4Dw1y5u/IqcpV0al+dEiyfCq6ogm62LLFP5wQ==
 
 "@particle-network/wallet@^1.3.2":
   version "1.3.2"
