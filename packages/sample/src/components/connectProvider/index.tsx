@@ -8,6 +8,7 @@ import {
   TokenPocketConnector,
   UnisatConnector,
   WizzConnector,
+  XverseConnector,
 } from '@particle-network/btc-connectkit';
 import VConsole from 'vconsole';
 
@@ -40,6 +41,7 @@ export default function ConnectProvider({ children }: { children: React.ReactNod
         new BitgetConnector(),
         new TokenPocketConnector(),
         new WizzConnector(),
+        new XverseConnector(),
       ]}
     >
       {children}

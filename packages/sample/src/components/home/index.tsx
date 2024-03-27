@@ -106,7 +106,12 @@ export default function Home() {
   };
 
   const onSendBitcoin = async () => {
-    if (!address || !satoshis) {
+    if (!address) {
+      toast.error('Please enter the address');
+      return;
+    }
+    if (!satoshis) {
+      toast.error('Please enter the amount');
       return;
     }
     try {
@@ -114,11 +119,21 @@ export default function Home() {
       toast.success(txId);
     } catch (error: any) {
       toast.error(error.message || 'send bitcoin error');
+      console.log('🚀 ~ onSendBitcoin ~ error:', error);
     }
   };
 
   const onSendInscription = async () => {
-    if (!inscriptionReceiverAddress || !inscriptionId || !provider) {
+    if (!inscriptionReceiverAddress) {
+      toast.error('Please enter the receiver address');
+      return;
+    }
+    if (!inscriptionId) {
+      toast.error('Please enter the inscription id');
+      return;
+    }
+    if (!provider) {
+      toast.error('Please connect wallet');
       return;
     }
     try {
@@ -128,6 +143,7 @@ export default function Home() {
       toast.success(`send success \n${txId}`);
     } catch (error: any) {
       toast.error(error.message || 'send inscription error');
+      console.log('🚀 ~ onSendInscription ~ error:', error);
     }
   };
 
