@@ -46,7 +46,7 @@
     "@ethereumjs/util": "^9.0.1",
     "@particle-network/aa": "^1.3.3",
     "@particle-network/chains": "*",
-    "@particle-network/wallet": "^1.3.2",
+    "@particle-network/wallet": "^1.4.0",
     "bitcore-lib": "^10.0.23",
     "react-remove-scroll": "^2.5.7",
     "sats-connect": "^1.4.1",

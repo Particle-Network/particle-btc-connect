@@ -8,7 +8,8 @@
     "dev:connectkit": "lerna run dev --scope @particle-network/btc-connectkit --stream",
     "dev:demo": "lerna run dev --scope sample --stream",
     "prettier": "prettier --write '**/*.{js,cjs,mjs,jsx,ts,tsx,css,less,sass,scss,json}'",
-    "lint": "eslint packages/**/src --no-error-on-unmatched-pattern --ext .ts,.tsx -c .eslintrc.json"
+    "lint": "eslint packages/**/src --no-error-on-unmatched-pattern --ext .ts,.tsx -c .eslintrc.json",
+    "upgrade:particle": "node updateVersion.js"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.26.0",
