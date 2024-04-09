@@ -59,7 +59,7 @@ export default function Home() {
       data: '0x',
     },
   ]);
-  const { btcContractVersionList, btcContractVersion, setBTCContractVersion } = useBTCContractVersion();
+  const { contractVersionList, contractVersion, setBTCContractVersion } = useBTCContractVersion();
 
   const onGetNetwork = async () => {
     try {
@@ -228,13 +228,13 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (btcContractVersion && chainId) {
-      const supportChains = accountContracts.BTC.find((item) => item.version === btcContractVersion)?.chainIds || [];
+    if (contractVersion && chainId) {
+      const supportChains = accountContracts.BTC.find((item) => item.version === contractVersion)?.chainIds || [];
       if (!supportChains.includes(chainId)) {
         switchChain(supportChains[0]);
       }
     }
-  }, [btcContractVersion, chainId, switchChain]);
+  }, [contractVersion, chainId, switchChain]);
 
   return (
     <div className="container mx-auto flex h-full flex-col items-center gap-6 overflow-auto py-10">
@@ -332,7 +332,7 @@ export default function Home() {
           <Select
             label="BTC Contract Version"
             size="sm"
-            selectedKeys={[btcContractVersion]}
+            selectedKeys={[contractVersion]}
             onChange={(event) => {
               const version = event?.target?.value as string;
               if (version) {
@@ -341,7 +341,7 @@ export default function Home() {
             }}
             isRequired
           >
-            {btcContractVersionList.map((version) => {
+            {contractVersionList.map((version) => {
               return (
                 <SelectItem key={version} value={version}>
                   {version}
@@ -359,16 +359,14 @@ export default function Home() {
           onChange={onSwitchChain}
           isRequired
         >
-          {(accountContracts.BTC.find((item) => item.version === btcContractVersion)?.chainIds || [])?.map?.(
-            (chainId) => {
-              const chain = chains.getEVMChainInfoById(chainId)!;
-              return (
-                <SelectItem key={chain.id} value={chain.id}>
-                  {chain.fullname}
-                </SelectItem>
-              );
-            }
-          )}
+          {(accountContracts.BTC.find((item) => item.version === contractVersion)?.chainIds || [])?.map?.((chainId) => {
+            const chain = chains.getEVMChainInfoById(chainId)!;
+            return (
+              <SelectItem key={chain.id} value={chain.id}>
+                {chain.fullname}
+              </SelectItem>
+            );
+          })}
         </Select>
 
         <Divider className="my-4"></Divider>

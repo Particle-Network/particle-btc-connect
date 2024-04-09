@@ -9,4 +9,10 @@ export const accountContracts = {
       version: '2.0.0',
     },
   ],
+  UNIVERSAL: [
+    {
+      chainIds: [11155111, 80001, 2011],
+      VERSION: '1.0.0',
+    },
+  ],
 };

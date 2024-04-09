@@ -30,7 +30,7 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
   const [disabled, setDisabled] = useState<boolean>(false);
   const [showNotRemind, setShowNotRemind] = useState<boolean>(true);
   const [nativeBalance, setNativeBalance] = useState<bigint>();
-  const { btcContractVersion } = useBTCContractVersion();
+  const { accountContractKey, contractVersion } = useBTCContractVersion();
 
   const { chainId, publicClient, evmAccount } = useETHProvider();
   const { smartAccount } = useConnectProvider();
@@ -81,8 +81,8 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
         method: 'particle_aa_deserializeUserOp',
         params: [
           {
-            name: 'BTC',
-            version: btcContractVersion,
+            name: accountContractKey,
+            version: contractVersion,
             ownerAddress: owner,
           },
           userOpBundle.userOp,
@@ -90,7 +90,7 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
       });
       return result;
     }
-  }, [userOpBundle, smartAccount, btcContractVersion]);
+  }, [userOpBundle, smartAccount, contractVersion, accountContractKey]);
 
   useEffect(() => {
     if (userOpBundle && open) {

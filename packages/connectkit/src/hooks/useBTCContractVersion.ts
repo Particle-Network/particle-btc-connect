@@ -1,10 +1,12 @@
 import { useConnectProvider } from '../context';
 
 export const useBTCContractVersion = () => {
-  const { btcContractVersionList, btcContractVersion, setBTCContractVersion } = useConnectProvider();
+  const { contractVersionList, contractVersion, setBTCContractVersion, accountContractKey } =
+    useConnectProvider();
   return {
-    btcContractVersionList,
-    btcContractVersion,
+    accountContractKey,
+    contractVersionList,
+    contractVersion,
     setBTCContractVersion,
   };
 };
