@@ -1640,13 +1640,12 @@
   dependencies:
     "@octokit/openapi-types" "^18.0.0"
 
-"@particle-network/aa@^1.3.3":
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/@particle-network/aa/-/aa-1.3.3.tgz#a6f8754f991b9f1c361708d22ac863d902a057a6"
-  integrity sha512-4KgIvL3v3pn+FtXOZBCNSFpOTuMC98FnpxHrV3PLcKZO8LLkQjlbqak/3qy7hbpnS2qmR2c4iDkXloLUEDqtxA==
+"@particle-network/aa@^1.3.4":
+  version "1.3.4"
+  resolved "https://registry.npmjs.org/@particle-network/aa/-/aa-1.3.4.tgz#7da7d6354eac113f02591bf055e1014f34afbe4a"
+  integrity sha512-0/ledvEo1UBhvIapVwfbp6jSnd+odZq7NO4VHBLcXEIZ8xY4WgIPOa5ZK7cpSK+tMkNO1W9qlr+3POMAlr/Ihg==
   dependencies:
     axios "^1.3.6"
-    uuid "^8.3.2"
 
 "@particle-network/chains@*":
   version "1.3.26"
