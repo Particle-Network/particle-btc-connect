@@ -1648,9 +1648,9 @@
     axios "^1.3.6"
 
 "@particle-network/chains@*":
-  version "1.3.26"
-  resolved "https://registry.npmjs.org/@particle-network/chains/-/chains-1.3.26.tgz#5f76360cd0e3a039c6323c07a838da23f865ba5d"
-  integrity sha512-WDRbPDpTsRfa6shMdeYVDWDMmgYksCPOuhUIyNejQx/99YEjT4Dw1y5u/IqcpV0al+dEiyfCq6ogm62LLFP5wQ==
+  version "1.3.28"
+  resolved "https://registry.npmjs.org/@particle-network/chains/-/chains-1.3.28.tgz#fba631dde0ce2de4b9073961694529b904f8f6cb"
+  integrity sha512-Of/5Tshn6i7wm1/WNDXPvALbIbQnsdWAv1RBToZxh9ezBEXzO23iUD7VT9Q1TXa2BOkHFMW0+a45oDhNyBvn2Q==
 
 "@particle-network/wallet@^1.4.0":
   version "1.4.0"
