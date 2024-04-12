@@ -122,10 +122,9 @@ export class XverseConnector extends BaseConnector {
     return this.#event.removeListener(event, handler);
   }
   getProvider() {
-    if (!this.isReady()) {
-      throw new Error(`${this.metadata.name} is not install!`);
+    if (this.isReady()) {
+      return window.BitcoinProvider;
     }
-    return window.BitcoinProvider;
   }
   async getNetwork(): Promise<'livenet' | 'testnet'> {
     if (!this.isReady()) {
