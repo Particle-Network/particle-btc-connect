@@ -1,7 +1,7 @@
 export const accountContracts = {
   BTC: [
     {
-      chainIds: [4200, 686868, 28206, 11503, 1501, 1502, 22776, 212, 3110, 80001],
+      chainIds: [4200, 686868, 28206, 11503, 1501, 1502, 22776, 212, 3110, 1],
       version: '1.0.0',
     },
     {
@@ -11,8 +11,8 @@ export const accountContracts = {
   ],
   UNIVERSAL: [
     {
-      chainIds: [11155111, 80001, 2011],
-      VERSION: '1.0.0',
+      chainIds: [11155111, 2011],
+      version: '1.0.0',
     },
   ],
 };
