@@ -11,7 +11,7 @@ export const accountContracts = {
   ],
   UNIVERSAL: [
     {
-      chainIds: [11155111, 2011],
+      chainIds: [11155111],
       version: '1.0.0',
     },
   ],
