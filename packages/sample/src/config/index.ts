@@ -16,3 +16,5 @@ export const accountContracts = {
     },
   ],
 };
+
+export type ContractName = keyof typeof accountContracts;

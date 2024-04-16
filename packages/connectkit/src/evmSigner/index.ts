@@ -31,11 +31,10 @@ export class AASignerProvider {
         this.chainId = Number(localChainId);
       } else {
         const chainId = supportChainIds[0];
-        if (!chainId) {
-          throw new Error('Please config valid chain id.');
+        if (chainId) {
+          localStorage.setItem('connect-evm-chain-id', chainId.toString());
+          this.chainId = chainId;
         }
-        localStorage.setItem('connect-evm-chain-id', chainId.toString());
-        this.chainId = chainId;
       }
     }
 

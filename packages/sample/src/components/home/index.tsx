@@ -4,11 +4,11 @@ import addIcon from '@/assets/add.svg';
 import bitcoinIcon from '@/assets/bitcoin.png';
 import particleLogo from '@/assets/particle-logo.svg';
 import removeIcon from '@/assets/remove.svg';
-import { accountContracts } from '@/config';
+import { accountContracts, type ContractName } from '@/config';
 import { Button, Checkbox, Divider, Input, Select, SelectItem } from '@nextui-org/react';
 import {
+  useAccountContract,
   useAccounts,
-  useBTCContractVersion,
   useBTCProvider,
   useConnectModal,
   useConnector,
@@ -32,15 +32,7 @@ type TxData = {
 export default function Home() {
   const { openConnectModal, disconnect } = useConnectModal();
   const { accounts } = useAccounts();
-  const {
-    provider: evmProvider,
-    evmAccount,
-    chainId,
-    switchChain,
-    publicClient,
-    getFeeQuotes,
-    sendUserOp,
-  } = useETHProvider();
+  const { evmAccount, chainId, switchChain, publicClient, getFeeQuotes, sendUserOp } = useETHProvider();
   const { provider, getNetwork, switchNetwork, signMessage, getPublicKey, sendBitcoin, sendInscription } =
     useBTCProvider();
   const [gasless, setGasless] = useState<boolean>(false);
@@ -59,7 +51,7 @@ export default function Home() {
       data: '0x',
     },
   ]);
-  const { contractVersionList, contractVersion, setBTCContractVersion } = useBTCContractVersion();
+  const { accountContract, setAccountContract } = useAccountContract();
 
   const onGetNetwork = async () => {
     try {
@@ -227,14 +219,20 @@ export default function Home() {
     setTxDatas([...txDatas]);
   };
 
+  const accountContractList = Object.keys(accountContracts)
+    .map((key) => accountContracts[key as ContractName].map((item) => ({ name: key, version: item.version })))
+    .reduce((previousValue, currentValue) => [...previousValue, ...currentValue]);
+
   useEffect(() => {
-    if (contractVersion && chainId) {
-      const supportChains = accountContracts.BTC.find((item) => item.version === contractVersion)?.chainIds || [];
-      if (!supportChains.includes(chainId)) {
-        switchChain(supportChains[0]);
+    if (chainId) {
+      const config = accountContracts[accountContract.name as ContractName]?.find(
+        (item) => item.version === accountContract.version
+      );
+      if (config && !config.chainIds.includes(chainId)) {
+        switchChain(config.chainIds[0]);
       }
     }
-  }, [contractVersion, chainId, switchChain]);
+  }, [accountContract, chainId, switchChain, accountContractList]);
 
   return (
     <div className="container mx-auto flex h-full flex-col items-center gap-6 overflow-auto py-10">
@@ -330,21 +328,22 @@ export default function Home() {
         <div className="mb-4 text-2xl font-bold">EVM</div>
         <div className="overflow-hidden text-ellipsis whitespace-nowrap">
           <Select
-            label="BTC Contract Version"
+            label="Account Contract"
             size="sm"
-            selectedKeys={[contractVersion]}
+            selectedKeys={[`${accountContract.name}-${accountContract.version}`]}
             onChange={(event) => {
-              const version = event?.target?.value as string;
-              if (version) {
-                setBTCContractVersion(version);
+              const value = event?.target?.value as string;
+              if (value) {
+                const [name, version] = value.split('-');
+                setAccountContract({ name, version });
               }
             }}
             isRequired
           >
-            {contractVersionList.map((version) => {
+            {accountContractList.map((contract) => {
               return (
-                <SelectItem key={version} value={version}>
-                  {version}
+                <SelectItem key={`${contract.name}-${contract.version}`} value={`${contract.name}-${contract.version}`}>
+                  {`${contract.name}-${contract.version}`}
                 </SelectItem>
               );
             })}
@@ -359,7 +358,11 @@ export default function Home() {
           onChange={onSwitchChain}
           isRequired
         >
-          {(accountContracts.BTC.find((item) => item.version === contractVersion)?.chainIds || [])?.map?.((chainId) => {
+          {(
+            accountContracts[accountContract.name as ContractName].find(
+              (item) => item.version === accountContract.version
+            )?.chainIds || []
+          )?.map?.((chainId) => {
             const chain = chains.getEVMChainInfoById(chainId)!;
             return (
               <SelectItem key={chain.id} value={chain.id}>
