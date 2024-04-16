@@ -9,12 +9,12 @@ export const accountContracts = {
       version: '2.0.0',
     },
   ],
-  UNIVERSAL: [
-    {
-      chainIds: [11155111],
-      version: '1.0.0',
-    },
-  ],
+  // UNIVERSAL: [
+  //   {
+  //     chainIds: [11155111],
+  //     version: '1.0.0',
+  //   },
+  // ],
 };
 
 export type ContractName = keyof typeof accountContracts;
