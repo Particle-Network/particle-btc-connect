@@ -43,7 +43,7 @@ interface ConnectOptions {
   aaOptions: AAOptions;
   rpcUrls?: Record<number, string>;
   walletOptions?: Omit<WalletOption, 'erc4337' | 'customStyle'> & {
-    customStyle?: Omit<WalletOption['customStyle'], 'supportChains' | 'evmSupportWalletConnect'>;
+    customStyle?: Omit<WalletOption['customStyle'], 'supportChains'>;
   };
 }
 
@@ -276,7 +276,6 @@ export const ConnectProvider = ({
         customStyle: {
           ...options.walletOptions?.customStyle,
           supportChains: supportChains as any,
-          evmSupportWalletConnect: false,
         },
       }
     );
