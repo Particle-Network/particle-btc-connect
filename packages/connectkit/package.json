@@ -1,6 +1,6 @@
 {
   "name": "@particle-network/btc-connectkit",
-  "version": "1.0.0-alpha.20",
+  "version": "1.0.0-alpha.21",
   "license": "MIT",
   "type": "module",
   "main": "dist/index.js",
