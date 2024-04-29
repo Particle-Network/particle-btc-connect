@@ -24,12 +24,12 @@ export function caculateNativeFee(userOp: UserOp): bigint {
 export const getBTCAAAddress = async (
   smartAccount: SmartAccount,
   btcAddress: string,
-  accountContractKey: string,
-  BTCVersion: string
+  name: string,
+  version: string
 ): Promise<string> => {
   const addresses = await smartAccount.provider.request({ method: 'eth_accounts' });
   const owner = addresses[0];
-  const localKey = `particle_BTC_${BTCVersion}_${owner}`;
+  const localKey = `particle_${name}_${version}_${owner}`;
   if (typeof window !== 'undefined' && localStorage) {
     const localAA = localStorage.getItem(localKey);
     if (localAA) {
@@ -42,8 +42,8 @@ export const getBTCAAAddress = async (
     method: 'particle_aa_getBTCAccount',
     params: [
       {
-        name: accountContractKey,
-        version: BTCVersion,
+        name: name,
+        version: version,
         btcPublicKey,
         btcAddress,
       },

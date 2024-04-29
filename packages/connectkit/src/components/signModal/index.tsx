@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { formatEther, type Hex } from 'viem';
 import { useConnectProvider } from '../../context';
 import { useETHProvider } from '../../hooks';
-import { useBTCContractVersion } from '../../hooks/useBTCContractVersion';
+import { useAccountContract } from '../../hooks/useAccountContract';
 import checkBox from '../../icons/check_box.svg';
 import checkBoxBlank from '../../icons/check_box_blank.svg';
 import close from '../../icons/close.svg';
@@ -30,7 +30,7 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
   const [disabled, setDisabled] = useState<boolean>(false);
   const [showNotRemind, setShowNotRemind] = useState<boolean>(true);
   const [nativeBalance, setNativeBalance] = useState<bigint>();
-  const { accountContractKey, contractVersion } = useBTCContractVersion();
+  const { accountContract } = useAccountContract();
 
   const { chainId, publicClient, evmAccount } = useETHProvider();
   const { smartAccount } = useConnectProvider();
@@ -81,8 +81,8 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
         method: 'particle_aa_deserializeUserOp',
         params: [
           {
-            name: accountContractKey,
-            version: contractVersion,
+            name: accountContract.name,
+            version: accountContract.version,
             ownerAddress: owner,
           },
           userOpBundle.userOp,
@@ -90,7 +90,7 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
       });
       return result;
     }
-  }, [userOpBundle, smartAccount, contractVersion, accountContractKey]);
+  }, [userOpBundle, smartAccount, accountContract]);
 
   useEffect(() => {
     if (userOpBundle && open) {

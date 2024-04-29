@@ -1,6 +1,6 @@
 {
   "name": "@particle-network/btc-connectkit",
-  "version": "1.0.0-alpha.19",
+  "version": "1.0.0-alpha.21",
   "license": "MIT",
   "type": "module",
   "main": "dist/index.js",
@@ -46,7 +46,7 @@
     "@ethereumjs/util": "^9.0.1",
     "@particle-network/aa": "^1.4.0",
     "@particle-network/chains": "*",
-    "@particle-network/wallet": "^1.4.4",
+    "@particle-network/wallet": "^1.4.3",
     "bitcore-lib": "^10.0.23",
     "react-remove-scroll": "^2.5.7",
     "sats-connect": "^1.4.1",
