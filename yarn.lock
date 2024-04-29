@@ -1652,10 +1652,10 @@
   resolved "https://registry.npmjs.org/@particle-network/chains/-/chains-1.4.7.tgz#b4bcefdc98dab81edf399e314c4e1b72586d3d97"
   integrity sha512-ON47iYK4lR9yarFjTB/nJu/0mP2oolKgxVgan/W5VboYG7c5mBpa0b3lt6xl1lv3vI6KqBFXVhFoZt0YKD3qqQ==
 
-"@particle-network/wallet@^1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@particle-network/wallet/-/wallet-1.4.3.tgz#73e90efa1513e0c6dabc18e6b03eb3cb082436a9"
-  integrity sha512-L4RBgLPFqfaD8bnuvGkWNDcs1burQPoizU3L7fV+GJeJhny2VfkWWxlV7cH9UZMCRNOEw8FqgD7N05Sc7JOQ7w==
+"@particle-network/wallet@^1.4.4":
+  version "1.4.4"
+  resolved "https://registry.npmjs.org/@particle-network/wallet/-/wallet-1.4.4.tgz#7c3dda3aa525ba33b29020b8effed32dc55f423b"
+  integrity sha512-/EKC7YUdY8ydAiOJUS+YmbTabZDM5aosmAymGLmiIIIBA4SnkkF/WB0WTBDIctWBJ+puo9BRvk0jsw0rIIpgYw==
   dependencies:
     "@solana/web3.js" "^1.73.0"
     crypto-js "^4.1.1"
