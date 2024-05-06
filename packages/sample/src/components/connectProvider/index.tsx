@@ -34,6 +34,9 @@ export default function ConnectProvider({ children }: { children: React.ReactNod
         rpcUrls: {
           686868: 'https://testnet-rpc.merlinchain.io',
         },
+        walletOptions: {
+          visible: true,
+        },
       }}
       connectors={[
         new UnisatConnector(),
