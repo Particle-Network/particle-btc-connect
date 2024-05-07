@@ -294,12 +294,14 @@ export const ConnectProvider = ({
   }, [smartAccount, options]);
 
   useEffect(() => {
-    if (evmAccount && options.walletOptions?.visible !== false) {
-      walletEntryPlugin.walletEntryCreate();
-      console.log('walletEntryPlugin walletEntryCreate');
-    } else {
-      walletEntryPlugin.walletEntryDestroy();
-      console.log('walletEntryPlugin walletEntryDestroy');
+    if (options.walletOptions?.visible !== false) {
+      if (evmAccount) {
+        walletEntryPlugin.walletEntryCreate();
+        console.log('walletEntryPlugin walletEntryCreate');
+      } else {
+        walletEntryPlugin.walletEntryDestroy();
+        console.log('walletEntryPlugin walletEntryDestroy');
+      }
     }
   }, [evmAccount, smartAccount, options]);
 
