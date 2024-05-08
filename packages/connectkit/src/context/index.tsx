@@ -43,7 +43,7 @@ interface ConnectOptions {
   aaOptions: AAOptions;
   rpcUrls?: Record<number, string>;
   walletOptions?: Omit<WalletOption, 'erc4337' | 'customStyle'> & {
-    customStyle?: Omit<WalletOption['customStyle'], 'supportChains' | 'evmSupportWalletConnect'>;
+    customStyle?: Omit<WalletOption['customStyle'], 'supportChains'>;
   };
 }
 
@@ -260,31 +260,32 @@ export const ConnectProvider = ({
   }, [options.aaOptions.accountContracts, _setAccountContract]);
 
   useEffect(() => {
-    const supportChains = evmSupportChainIds.map((id) => chains.getEVMChainInfoById(id));
-    if (supportChains.some((chain) => !chain)) {
-      throw new Error(`Please config valid chain ids, ${JSON.stringify(evmSupportChainIds)}`);
-    }
-    walletEntryPlugin.init(
-      {
-        projectId: options.projectId,
-        clientKey: options.clientKey,
-        appId: options.appId,
-      },
-      {
-        ...options.walletOptions,
-        erc4337: accountContract,
-        customStyle: {
-          ...options.walletOptions?.customStyle,
-          supportChains: supportChains as any,
-          evmSupportWalletConnect: false,
-        },
+    if (options.walletOptions?.visible !== false) {
+      const supportChains = evmSupportChainIds.map((id) => chains.getEVMChainInfoById(id));
+      if (supportChains.some((chain) => !chain)) {
+        throw new Error(`Please config valid chain ids, ${JSON.stringify(evmSupportChainIds)}`);
       }
-    );
-    console.log('walletEntryPlugin init');
+      walletEntryPlugin.init(
+        {
+          projectId: options.projectId,
+          clientKey: options.clientKey,
+          appId: options.appId,
+        },
+        {
+          ...options.walletOptions,
+          erc4337: accountContract,
+          customStyle: {
+            ...options.walletOptions?.customStyle,
+            supportChains: supportChains as any,
+          },
+        }
+      );
+      console.log('walletEntryPlugin init');
+    }
   }, [options, evmSupportChainIds, accountContract]);
 
   useEffect(() => {
-    if (smartAccount) {
+    if (smartAccount && options.walletOptions?.visible !== false) {
       walletEntryPlugin.setWalletCore({
         ethereum: smartAccount.provider,
       });
@@ -293,12 +294,14 @@ export const ConnectProvider = ({
   }, [smartAccount, options]);
 
   useEffect(() => {
-    if (evmAccount) {
-      walletEntryPlugin.walletEntryCreate();
-      console.log('walletEntryPlugin walletEntryCreate');
-    } else {
-      walletEntryPlugin.walletEntryDestroy();
-      console.log('walletEntryPlugin walletEntryDestroy');
+    if (options.walletOptions?.visible !== false) {
+      if (evmAccount) {
+        walletEntryPlugin.walletEntryCreate();
+        console.log('walletEntryPlugin walletEntryCreate');
+      } else {
+        walletEntryPlugin.walletEntryDestroy();
+        console.log('walletEntryPlugin walletEntryDestroy');
+      }
     }
   }, [evmAccount, smartAccount, options]);
 

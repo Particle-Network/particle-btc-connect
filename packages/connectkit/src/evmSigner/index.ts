@@ -7,6 +7,8 @@ import {
   SwitchChainError,
   UnsupportedProviderMethodError,
   createPublicClient,
+  hashMessage,
+  hashTypedData,
   http,
   type PublicClient,
 } from 'viem';
@@ -46,8 +48,7 @@ export class AASignerProvider {
       arg.method === 'eth_sendTransaction' ||
       arg.method === 'wallet_addEthereumChain' ||
       arg.method === 'wallet_watchAsset' ||
-      arg.method === 'eth_sign' ||
-      arg.method.startsWith('eth_signTypedData')
+      arg.method === 'eth_sign'
     ) {
       throw new UnsupportedProviderMethodError(new Error('The Provider does not support the requested method.'));
     }
@@ -59,12 +60,31 @@ export class AASignerProvider {
     } else if (arg.method === 'eth_chainId') {
       return `0x${this.chainId.toString(16)}`;
     } else if (arg.method === 'personal_sign') {
-      const message = arg.params?.[0];
+      let message = arg.params?.[0];
+      console.log('personal_sign message:', message);
+      if (message.length !== 66) {
+        const hash = hashMessage({ raw: message });
+        console.log('personal_sign hash:', hash);
+        message = hash;
+      }
       const result = await this.personalSign(message || '');
       const convertResult = convertSignature(result);
       if (!convertResult) {
         throw new Error('sign error');
       }
+      console.log(`personal_sign result(${convertResult.length}): `, convertResult);
+      return convertResult;
+    } else if (arg.method === 'eth_signTypedData' || arg.method === 'eth_signTypedData_v4') {
+      const typedData = arg.params?.[1];
+      console.log('signTypedData typedData', typedData);
+      const hash = hashTypedData(typeof typedData === 'string' ? JSON.parse(typedData) : typedData);
+      console.log('signTypedData hash', hash);
+      const result = await this.personalSign(hash || '');
+      const convertResult = convertSignature(result);
+      if (!convertResult) {
+        throw new Error('sign error');
+      }
+      console.log(`eth_signTypedData result(${convertResult.length}): `, convertResult);
       return convertResult;
     } else if (arg.method === 'wallet_switchEthereumChain') {
       if (arg.params && arg.params instanceof Array && arg.params[0] && arg.params[0].chainId) {
