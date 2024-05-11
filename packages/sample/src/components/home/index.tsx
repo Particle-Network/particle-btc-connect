@@ -5,6 +5,7 @@ import bitcoinIcon from '@/assets/bitcoin.png';
 import particleLogo from '@/assets/particle-logo.svg';
 import removeIcon from '@/assets/remove.svg';
 import { accountContracts, type ContractName } from '@/config';
+import typedData from '@/config/typedData';
 import { Button, Checkbox, Divider, Input, Select, SelectItem } from '@nextui-org/react';
 import {
   useAccountContract,
@@ -21,7 +22,7 @@ import { useRequest } from 'ahooks';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { isAddress, isHex } from 'viem';
+import { isAddress, isHex, type Hex } from 'viem';
 
 type TxData = {
   to: string;
@@ -32,7 +33,7 @@ type TxData = {
 export default function Home() {
   const { openConnectModal, disconnect } = useConnectModal();
   const { accounts } = useAccounts();
-  const { evmAccount, chainId, switchChain, publicClient, getFeeQuotes, sendUserOp } = useETHProvider();
+  const { evmAccount, chainId, switchChain, walletClient, getFeeQuotes, sendUserOp } = useETHProvider();
   const { provider, getNetwork, switchNetwork, signMessage, getPublicKey, sendBitcoin, sendInscription } =
     useBTCProvider();
   const [gasless, setGasless] = useState<boolean>(false);
@@ -177,6 +178,44 @@ export default function Home() {
       onError: (error: any) => {
         console.log('🚀 ~ onSendUserOp ~ error:', error);
         toast.error(error.data?.extraMessage?.message || error.details || error.message || 'send user operation error');
+      },
+    }
+  );
+
+  const { run: onPersonalSign, loading: personalSignLoading } = useRequest(
+    async () => {
+      const result = await walletClient.signMessage({
+        account: evmAccount as Hex,
+        message: 'Hello Particle!\n\nThe First Account Abstraction Protocol on Bitcoin.\n\nhttps://particle.network',
+      });
+      return result;
+    },
+    {
+      manual: true,
+      onSuccess: (signature) => {
+        toast.success(`personal sign success: ${signature}`);
+      },
+      onError: (error: any) => {
+        toast.error(error.details || error.message || 'personal sign error');
+      },
+    }
+  );
+
+  const { run: onSignTypedData, loading: signTypedDataLoading } = useRequest(
+    async () => {
+      const result = await walletClient.signTypedData({
+        account: evmAccount as Hex,
+        ...typedData,
+      } as any);
+      return result;
+    },
+    {
+      manual: true,
+      onSuccess: (signature) => {
+        toast.success(`sign typedData success: ${signature}`);
+      },
+      onError: (error: any) => {
+        toast.error(error.details || error.message || 'sign typedData error');
       },
     }
   );
@@ -371,6 +410,26 @@ export default function Home() {
             );
           })}
         </Select>
+
+        <Button
+          color="primary"
+          onClick={onPersonalSign}
+          isLoading={personalSignLoading}
+          className="px-10"
+          isDisabled={evmAccount == null}
+        >
+          Personal Sign
+        </Button>
+
+        <Button
+          color="primary"
+          onClick={onSignTypedData}
+          isLoading={signTypedDataLoading}
+          className="px-10"
+          isDisabled={evmAccount == null}
+        >
+          Sign Typed Data
+        </Button>
 
         <Divider className="my-4"></Divider>
 

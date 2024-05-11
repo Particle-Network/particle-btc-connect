@@ -12,6 +12,7 @@ import {
   http,
   type PublicClient,
 } from 'viem';
+import { EVMMethod } from '../types/evmMethod';
 import { convertSignature, pubKeyToEVMAddress } from '../utils/ethereumUtils';
 
 export class AASignerProvider {
@@ -59,7 +60,7 @@ export class AASignerProvider {
       return [address];
     } else if (arg.method === 'eth_chainId') {
       return `0x${this.chainId.toString(16)}`;
-    } else if (arg.method === 'personal_sign') {
+    } else if (arg.method === EVMMethod.personalSign) {
       let message = arg.params?.[0];
       console.log('personal_sign message:', message);
       if (message.length !== 66) {

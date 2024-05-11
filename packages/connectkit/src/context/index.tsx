@@ -316,6 +316,20 @@ export const ConnectProvider = ({
             message: 'Wallet disconnected',
           },
         });
+      } else if (events.listenerCount(EventName.personalSignResult) > 0) {
+        events.emit(EventName.personalSignResult, {
+          error: {
+            code: -32600,
+            message: 'Wallet disconnected',
+          },
+        });
+      } else if (events.listenerCount(EventName.signTypedDataResult) > 0) {
+        events.emit(EventName.signTypedDataResult, {
+          error: {
+            code: -32600,
+            message: 'Wallet disconnected',
+          },
+        });
       }
     }
   }, [accounts, closeConnectModal, closeSignModal]);

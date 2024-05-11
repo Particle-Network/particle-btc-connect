@@ -1,7 +1,7 @@
-import type { UserOpBundle } from '@particle-network/aa';
+import type { RequestArguments, UserOpBundle } from '@particle-network/aa';
 import { chains } from '@particle-network/chains';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { formatEther, type Hex } from 'viem';
+import { formatEther, hexToString, type Hex } from 'viem';
 import { useConnectProvider } from '../../context';
 import { useETHProvider } from '../../hooks';
 import { useAccountContract } from '../../hooks/useAccountContract';
@@ -11,6 +11,7 @@ import close from '../../icons/close.svg';
 import copy from '../../icons/copy.svg';
 import { type EVMDeserializeTransactionResult } from '../../types/deserializeTx';
 import { EventName } from '../../types/eventName';
+import { EVMMethod } from '../../types/evmMethod';
 import { shortString } from '../../utils';
 import { caculateNativeFee } from '../../utils/ethereumUtils';
 import events from '../../utils/eventUtils';
@@ -32,13 +33,17 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
   const [nativeBalance, setNativeBalance] = useState<bigint>();
   const { accountContract } = useAccountContract();
 
-  const { chainId, publicClient, evmAccount } = useETHProvider();
+  // personal_sign or eth_signTypedData
+  const [requestArguments, setRequestArguments] = useState<RequestArguments>();
+
+  const { chainId, publicClient, evmAccount, provider } = useETHProvider();
   const { smartAccount } = useConnectProvider();
 
   useEffect(() => {
     if (!open) {
       setDeserializeResult(undefined);
       setUserOpBundle(undefined);
+      setRequestArguments(undefined);
       setLoading(false);
       setDisabled(false);
       setDeserializeLoading(false);
@@ -67,9 +72,21 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
       setUserOpBundle(opBundle);
       onOpen();
     };
+    const onPersonalSign = (arg: RequestArguments) => {
+      setRequestArguments(arg);
+      onOpen();
+    };
+    const onSignTypedData = (arg: RequestArguments) => {
+      setRequestArguments(arg);
+      onOpen();
+    };
     events.on(EventName.sendUserOp, onSendUserOp);
+    events.on(EventName.personalSign, onPersonalSign);
+    events.on(EventName.signTypedData, onSignTypedData);
     return () => {
       events.off(EventName.sendUserOp, onSendUserOp);
+      events.off(EventName.personalSign, onPersonalSign);
+      events.off(EventName.signTypedData, onSignTypedData);
     };
   }, [onOpen, setUserOpBundle]);
 
@@ -95,6 +112,7 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
   useEffect(() => {
     if (userOpBundle && open) {
       console.log('deserializeUserOp start');
+      setDeserializeLoading(true);
       deserializeUserOp()
         .then((result) => {
           console.log('🚀 ~ deserializeUserOp ~ result:', result);
@@ -111,7 +129,7 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
   }, [deserializeUserOp, userOpBundle, open, onClose]);
 
   useEffect(() => {
-    if (open && publicClient && evmAccount) {
+    if (open && publicClient && evmAccount && userOpBundle) {
       publicClient
         .getBalance({ address: evmAccount as Hex })
         .then((result) => setNativeBalance(result))
@@ -123,13 +141,11 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
           onClose();
         });
     }
-  }, [open, publicClient, evmAccount, onClose]);
+  }, [open, publicClient, evmAccount, userOpBundle, onClose]);
 
   useEffect(() => {
     if (nativeBalance != null && deserializeResult != null) {
       setDeserializeLoading(false);
-    } else {
-      setDeserializeLoading(true);
     }
   }, [nativeBalance, deserializeResult]);
 
@@ -146,31 +162,67 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
   }, [userOpBundle]);
 
   const closeModal = () => {
-    events.emit(EventName.sendUserOpResult, {
-      error: {
-        code: 4001,
-        message: 'The user rejected the request.',
-      },
-    });
+    let event;
+    if (userOpBundle) {
+      event = EventName.sendUserOpResult;
+    } else if (requestArguments?.method === EVMMethod.personalSign) {
+      event = EventName.personalSignResult;
+    } else if (requestArguments?.method?.startsWith(EVMMethod.signTypedData)) {
+      event = EventName.signTypedDataResult;
+    }
+
+    if (event) {
+      events.emit(event, {
+        error: {
+          code: 4001,
+          message: 'The user rejected the request.',
+        },
+      });
+    }
+
     onClose();
   };
 
   const confirmTx = useCallback(async () => {
-    if (smartAccount && userOpBundle) {
+    if (smartAccount && provider) {
       setLoading(true);
-      try {
-        const hash = await smartAccount.sendUserOperation(userOpBundle);
-        events.emit(EventName.sendUserOpResult, { result: hash });
-      } catch (error) {
-        events.emit(EventName.sendUserOpResult, {
-          error,
-        });
-      } finally {
-        setLoading(false);
+      if (userOpBundle) {
+        try {
+          const hash = await smartAccount.sendUserOperation(userOpBundle);
+          events.emit(EventName.sendUserOpResult, { result: hash });
+        } catch (error) {
+          events.emit(EventName.sendUserOpResult, {
+            error,
+          });
+        } finally {
+          setLoading(false);
+        }
+      } else if (requestArguments) {
+        try {
+          const hash = await provider.request(requestArguments);
+          events.emit(
+            requestArguments.method == EVMMethod.personalSign
+              ? EventName.personalSignResult
+              : EventName.signTypedDataResult,
+            { result: hash }
+          );
+        } catch (error) {
+          events.emit(
+            requestArguments.method == EVMMethod.personalSign
+              ? EventName.personalSignResult
+              : EventName.signTypedDataResult,
+            {
+              error,
+            }
+          );
+        } finally {
+          setLoading(false);
+        }
       }
+
       onClose();
     }
-  }, [smartAccount, userOpBundle, onClose]);
+  }, [smartAccount, provider, requestArguments, userOpBundle, onClose]);
 
   useEffect(() => {
     if (userOpBundle && nativeBalance != null && deserializeResult) {
@@ -192,10 +244,31 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
     }
   }, [userOpBundle, gasFee, nativeBalance, deserializeResult]);
 
+  const unsignedMessage = useMemo(() => {
+    if (!requestArguments) {
+      return undefined;
+    }
+
+    if (requestArguments.method === EVMMethod.personalSign) {
+      const message = requestArguments.params?.[0] || '0x';
+      return hexToString(message);
+    } else {
+      const typedData = requestArguments.params?.[1];
+      const obj = typeof typedData === 'string' ? JSON.parse(typedData) : typedData;
+      return JSON.stringify(obj, null, 2);
+    }
+  }, [requestArguments]);
+
   return (
     <Modal open={open} onClose={onClose} isDismissable={false} contentClassName={styles.modalContent}>
       <>
         <img className={styles.closeBtn} src={close} onClick={closeModal}></img>
+
+        {requestArguments && (
+          <div className={styles.signTitle}>
+            {requestArguments.method == EVMMethod.personalSign ? 'Sign Message' : 'Sign Typed Data'}
+          </div>
+        )}
 
         <div className={styles.chainInfo}>
           <img src={chainInfo?.icon}></img>
@@ -211,11 +284,13 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
           </CopyText>
         </div>
 
-        <div className={styles.detailsContent + (deserializeResult ? ` ${styles.fill}` : '')}>
+        <div className={styles.detailsContent + (deserializeResult || requestArguments ? ` ${styles.fill}` : '')}>
           {deserializeResult &&
             deserializeResult.map((details, index) => (
               <TransactionDetails key={`${details.type}-${index}`} details={details} />
             ))}
+
+          {unsignedMessage && <div className={styles.unsignedMessage}>{unsignedMessage}</div>}
         </div>
 
         {gasFee && (
