@@ -7,9 +7,10 @@ import SignModal from '../components/signModal';
 import { type BaseConnector } from '../connector/base';
 import { AASignerProvider } from '../evmSigner';
 import useModalStateValue from '../hooks/useModalStateValue';
+import type { AccountInfo } from '../types/accountInfo';
 import { EventName } from '../types/eventName';
 import { checkBTCVersion } from '../utils';
-import { getBTCAAAddress } from '../utils/ethereumUtils';
+import { getBTCAAAddress, getBTCAccountInfo } from '../utils/ethereumUtils';
 import events from '../utils/eventUtils';
 import txConfirm from '../utils/txConfirmUtils';
 
@@ -32,6 +33,7 @@ interface GlobalState {
   sendBitcoin: (toAddress: string, satoshis: number, options?: { feeRate: number }) => Promise<string>;
   accountContract: AccountContract;
   setAccountContract: (accountContract: AccountContract) => void;
+  getSmartAccountInfo: () => Promise<AccountInfo | undefined>;
 }
 
 const ConnectContext = createContext<GlobalState>({} as any);
@@ -198,7 +200,21 @@ export const ConnectProvider = ({
     } else {
       setEVMAccount(undefined);
     }
-  }, [accounts, smartAccount, getPublicKey, accountContract]);
+  }, [accountContract, accounts, smartAccount]);
+
+  const getSmartAccountInfo = useCallback(async () => {
+    if (accounts.length > 0 && smartAccount) {
+      const accountInfo = await getBTCAccountInfo(
+        smartAccount,
+        accounts[0],
+        accountContract.name,
+        accountContract.version
+      );
+      setEVMAccount(accountInfo.smartAccountAddress);
+      return accountInfo;
+    }
+    return undefined;
+  }, [accounts, smartAccount, accountContract, setEVMAccount]);
 
   const requestAccount = useCallback(
     async (connector: BaseConnector) => {
@@ -355,6 +371,7 @@ export const ConnectProvider = ({
         sendBitcoin,
         accountContract: accountContract,
         setAccountContract: setAccountContract,
+        getSmartAccountInfo,
       }}
     >
       {children}

@@ -2,11 +2,12 @@
 
 import addIcon from '@/assets/add.svg';
 import bitcoinIcon from '@/assets/bitcoin.png';
+import infoIcon from '@/assets/info.svg';
 import particleLogo from '@/assets/particle-logo.svg';
 import removeIcon from '@/assets/remove.svg';
 import { accountContracts, type ContractName } from '@/config';
 import typedData from '@/config/typedData';
-import { Button, Checkbox, Divider, Input, Select, SelectItem } from '@nextui-org/react';
+import { Button, Checkbox, Divider, Input, Select, SelectItem, useDisclosure } from '@nextui-org/react';
 import {
   useAccountContract,
   useAccounts,
@@ -23,6 +24,8 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { isAddress, isHex, type Hex } from 'viem';
+import { AccountInfoModal } from '../accountInfoModal';
+import { VerifyModal } from '../verifyModal';
 
 type TxData = {
   to: string;
@@ -30,10 +33,13 @@ type TxData = {
   data: string;
 };
 
+const personalSignMessage =
+  'Hello Particle!\n\nThe First Account Abstraction Protocol on Bitcoin.\n\nhttps://particle.network';
+
 export default function Home() {
   const { openConnectModal, disconnect } = useConnectModal();
   const { accounts } = useAccounts();
-  const { evmAccount, chainId, switchChain, walletClient, getFeeQuotes, sendUserOp } = useETHProvider();
+  const { account, chainId, switchChain, walletClient, getFeeQuotes, sendUserOp } = useETHProvider();
   const { provider, getNetwork, switchNetwork, signMessage, getPublicKey, sendBitcoin, sendInscription } =
     useBTCProvider();
   const [gasless, setGasless] = useState<boolean>(false);
@@ -53,6 +59,14 @@ export default function Home() {
     },
   ]);
   const { accountContract, setAccountContract } = useAccountContract();
+
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [signData, setSignData] = useState<{
+    signature: string;
+    data: any;
+  }>();
+
+  const { isOpen: infoIsOpen, onOpen: infoOnOpen, onOpenChange: infoOnOpenChange } = useDisclosure();
 
   const onGetNetwork = async () => {
     try {
@@ -185,15 +199,20 @@ export default function Home() {
   const { run: onPersonalSign, loading: personalSignLoading } = useRequest(
     async () => {
       const result = await walletClient.signMessage({
-        account: evmAccount as Hex,
-        message: 'Hello Particle!\n\nThe First Account Abstraction Protocol on Bitcoin.\n\nhttps://particle.network',
+        account: account as Hex,
+        message: personalSignMessage,
       });
       return result;
     },
     {
       manual: true,
       onSuccess: (signature) => {
-        toast.success(`personal sign success: ${signature}`);
+        setSignData({
+          signature,
+          data: personalSignMessage,
+        });
+        onOpen();
+        toast.success('personal sign success');
       },
       onError: (error: any) => {
         toast.error(error.details || error.message || 'personal sign error');
@@ -204,7 +223,7 @@ export default function Home() {
   const { run: onSignTypedData, loading: signTypedDataLoading } = useRequest(
     async () => {
       const result = await walletClient.signTypedData({
-        account: evmAccount as Hex,
+        account: account as Hex,
         ...typedData,
       } as any);
       return result;
@@ -212,7 +231,12 @@ export default function Home() {
     {
       manual: true,
       onSuccess: (signature) => {
-        toast.success(`sign typedData success: ${signature}`);
+        setSignData({
+          signature,
+          data: typedData,
+        });
+        onOpen();
+        toast.success('sign typedData success');
       },
       onError: (error: any) => {
         toast.error(error.details || error.message || 'sign typedData error');
@@ -365,6 +389,10 @@ export default function Home() {
 
       <div className="relative mb-20 mt-20 flex h-auto w-[40rem] max-w-full flex-col gap-4 rounded-lg p-4 shadow-md">
         <div className="mb-4 text-2xl font-bold">EVM</div>
+        {account && (
+          <Image src={infoIcon} alt="" className="absolute right-4 mt-1 cursor-pointer" onClick={infoOnOpen}></Image>
+        )}
+
         <div className="overflow-hidden text-ellipsis whitespace-nowrap">
           <Select
             label="Account Contract"
@@ -388,7 +416,7 @@ export default function Home() {
             })}
           </Select>
         </div>
-        <div className="overflow-hidden text-ellipsis whitespace-nowrap">Address: {evmAccount}</div>
+        <div className="overflow-hidden text-ellipsis whitespace-nowrap">Address: {account}</div>
         <div className="overflow-hidden text-ellipsis whitespace-nowrap">ChainId: {chainId}</div>
         <Select
           label="Switch Chain"
@@ -416,7 +444,7 @@ export default function Home() {
           onClick={onPersonalSign}
           isLoading={personalSignLoading}
           className="px-10"
-          isDisabled={evmAccount == null}
+          isDisabled={account == null}
         >
           Personal Sign
         </Button>
@@ -426,7 +454,7 @@ export default function Home() {
           onClick={onSignTypedData}
           isLoading={signTypedDataLoading}
           className="px-10"
-          isDisabled={evmAccount == null}
+          isDisabled={account == null}
         >
           Sign Typed Data
         </Button>
@@ -476,11 +504,13 @@ export default function Home() {
           onClick={onSendUserOp}
           isLoading={sendUserOpLoading}
           className="px-10"
-          isDisabled={evmAccount == null}
+          isDisabled={account == null}
         >
           Send
         </Button>
       </div>
+      <VerifyModal isOpen={isOpen} onOpenChange={onOpenChange} signData={signData}></VerifyModal>
+      <AccountInfoModal isOpen={infoIsOpen} onOpenChange={infoOnOpenChange}></AccountInfoModal>
     </div>
   );
 }

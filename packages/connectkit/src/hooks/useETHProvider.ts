@@ -10,7 +10,7 @@ import events, { getPendingSignEventAccount } from '../utils/eventUtils';
 import txConfirm from '../utils/txConfirmUtils';
 
 export const useETHProvider = () => {
-  const { evmAccount, smartAccount } = useConnectProvider();
+  const { evmAccount, smartAccount, getSmartAccountInfo } = useConnectProvider();
   const [chainId, setChainId] = useState<number>();
 
   useEffect(() => {
@@ -133,7 +133,10 @@ export const useETHProvider = () => {
 
   return {
     provider,
+    /** @deprecated please use account */
     evmAccount,
+    account: evmAccount,
+    getSmartAccountInfo,
     switchChain,
     chainId,
     getFeeQuotes,

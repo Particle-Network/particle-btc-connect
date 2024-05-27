@@ -1,6 +1,7 @@
 import { bytesToHex, publicToAddress, toBytes, toChecksumAddress, toRpcSig } from '@ethereumjs/util';
 import type { SmartAccount, UserOp } from '@particle-network/aa';
 import bitcore from 'bitcore-lib';
+import type { AccountInfo } from '../types/accountInfo';
 
 export const pubKeyToEVMAddress = (pubKey: string) => {
   const address = toChecksumAddress(bytesToHex(publicToAddress(toBytes(`0x${pubKey}`), true)));
@@ -55,4 +56,34 @@ export const getBTCAAAddress = async (
     localStorage.setItem(localKey, address);
   }
   return address;
+};
+
+export const getBTCAccountInfo = async (
+  smartAccount: SmartAccount,
+  btcAddress: string,
+  name: string,
+  version: string
+) => {
+  const btcPublicKey = await (smartAccount.provider as any).getPublicKey();
+  const [accountInfo] = await smartAccount.sendRpc<AccountInfo[]>({
+    method: 'particle_aa_getBTCAccount',
+    params: [
+      {
+        name: name,
+        version: version,
+        btcPublicKey,
+        btcAddress,
+      },
+    ],
+  });
+
+  const address = accountInfo.smartAccountAddress;
+  const addresses = await smartAccount.provider.request({ method: 'eth_accounts' });
+  const owner = addresses[0];
+  const localKey = `particle_${name}_${version}_${owner}`;
+  if (typeof window !== 'undefined' && localStorage && address) {
+    localStorage.setItem(localKey, address);
+  }
+
+  return accountInfo;
 };
