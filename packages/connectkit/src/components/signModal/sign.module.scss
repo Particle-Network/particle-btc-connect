@@ -9,6 +9,12 @@
     right: 16px;
   }
 
+  .signTitle {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
   .chainInfo {
     display: flex;
     flex-direction: row;
@@ -60,6 +66,22 @@
 
     &.fill {
       max-height: 500px;
+    }
+
+    .unsignedMessage {
+      border-radius: 8px;
+      border: 1px solid #252525;
+      background: #232529;
+      padding: 10px;
+      color: white;
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+      font-size: 14px;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      color: #ffffffa1;
+      text-align: left;
     }
   }
 

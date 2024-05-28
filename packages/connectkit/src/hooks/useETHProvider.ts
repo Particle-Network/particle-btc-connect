@@ -1,15 +1,16 @@
 import { intToHex } from '@ethereumjs/util';
 import type { SendTransactionParams, Transaction, UserOpBundle, UserOpParams } from '@particle-network/aa';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { PublicClient } from 'viem';
+import { createWalletClient, custom, type PublicClient } from 'viem';
 import { useConnectProvider } from '../context';
 import { EthereumProvider } from '../evmSigner/provider';
+import { WalletClientProvider } from '../evmSigner/walletClientProvider';
 import { EventName } from '../types/eventName';
-import events from '../utils/eventUtils';
+import events, { getPendingSignEventAccount } from '../utils/eventUtils';
 import txConfirm from '../utils/txConfirmUtils';
 
 export const useETHProvider = () => {
-  const { evmAccount, smartAccount } = useConnectProvider();
+  const { evmAccount, smartAccount, getSmartAccountInfo } = useConnectProvider();
   const [chainId, setChainId] = useState<number>();
 
   useEffect(() => {
@@ -73,7 +74,7 @@ export const useETHProvider = () => {
       const showConfirmModal = !forceHideConfirmModal && !txConfirm.isNotRemind();
 
       if (showConfirmModal) {
-        if (events.listenerCount(EventName.sendUserOpResult) > 0) {
+        if (getPendingSignEventAccount() > 0) {
           throw new Error('Operation failed, there is a transaction being processed');
         }
       }
@@ -124,14 +125,24 @@ export const useETHProvider = () => {
     return ethereumProvider;
   }, [evmAccount, sendUserOp, smartAccount?.provider]);
 
+  const walletClient = useMemo(() => {
+    return createWalletClient({
+      transport: custom(new WalletClientProvider(provider)),
+    });
+  }, [provider]);
+
   return {
     provider,
+    /** @deprecated please use account */
     evmAccount,
+    account: evmAccount,
+    getSmartAccountInfo,
     switchChain,
     chainId,
     getFeeQuotes,
     buildUserOp,
     sendUserOp,
     publicClient,
+    walletClient,
   };
 };
