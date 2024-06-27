@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@ethereumjs/util": "^9.0.1",
-    "@particle-network/aa": "^1.5.0",
+    "@particle-network/aa": "^1.5.1",
     "@particle-network/chains": "*",
     "@particle-network/wallet": "^1.4.6",
     "bitcore-lib": "^10.0.23",

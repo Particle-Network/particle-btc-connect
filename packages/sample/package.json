@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@nextui-org/react": "^2.2.9",
-    "@particle-network/btc-connectkit": "^1.0.0-alpha.24",
+    "@particle-network/btc-connectkit": "^1.0.0-alpha.25",
     "ahooks": "^3.7.8",
     "framer-motion": "^10.17.9",
     "next": "14.0.4",

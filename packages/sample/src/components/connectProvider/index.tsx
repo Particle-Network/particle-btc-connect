@@ -10,6 +10,7 @@ import {
   WizzConnector,
   XverseConnector,
 } from '@particle-network/btc-connectkit';
+import { EntryPosition } from '@particle-network/wallet';
 import VConsole from 'vconsole';
 
 if (typeof window !== 'undefined') {
@@ -36,6 +37,7 @@ export default function ConnectProvider({ children }: { children: React.ReactNod
         },
         walletOptions: {
           visible: true,
+          entryPosition: EntryPosition.BR,
         },
       }}
       connectors={[
