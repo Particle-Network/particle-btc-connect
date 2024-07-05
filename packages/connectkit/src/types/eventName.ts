@@ -7,4 +7,7 @@ export enum EventName {
 
   signTypedData = 'signTypedData',
   signTypedDataResult = 'signTypedDataResult',
+
+  connect = 'connect',
+  connectResult = 'connectResult',
 }
