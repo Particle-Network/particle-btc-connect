@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { type BaseConnector } from '../../connector/base';
-import { useConnectProvider } from '../../context';
 import { useConnector } from '../../hooks';
 import back from '../../icons/back.svg';
 import close from '../../icons/close.svg';
 import retryIcon from '../../icons/retry.svg';
+import { EventName } from '../../types/eventName';
+import events from '../../utils/eventUtils';
 import Button from '../button';
 import Modal from '../modal';
 import styles from './connect.module.scss';
@@ -14,8 +15,21 @@ const ConnectModal = ({ open, onClose }: { open: boolean; onClose: () => void })
   const [retryVisible, setRetryVisible] = useState(false);
   const [walletReady, setWalletReady] = useState(true);
   const [selectConnector, setSelectConnector] = useState<BaseConnector>();
-  const { closeConnectModal } = useConnectProvider();
   const { connect, connectors } = useConnector();
+
+  const closeModal = (accounts?: string[]) => {
+    onClose();
+    if (accounts) {
+      events.emit(EventName.connectResult, { result: accounts });
+    } else {
+      events.emit(EventName.connectResult, {
+        error: {
+          code: 4001,
+          message: 'The user rejected the request.',
+        },
+      });
+    }
+  };
 
   useEffect(() => {
     if (!open) {
@@ -31,8 +45,8 @@ const ConnectModal = ({ open, onClose }: { open: boolean; onClose: () => void })
     setSelectConnector(connector);
     if (connector.isReady()) {
       try {
-        await connect(connector.metadata.id);
-        closeConnectModal();
+        const accounts = await connect(connector.metadata.id);
+        closeModal(accounts);
       } catch (error: any) {
         console.error('onConnect error', error);
         if (error.code === 4001) {
@@ -59,9 +73,9 @@ const ConnectModal = ({ open, onClose }: { open: boolean; onClose: () => void })
   };
 
   return (
-    <Modal open={open} onClose={onClose} isDismissable={false} contentClassName={styles.connectModal}>
+    <Modal open={open} onClose={() => closeModal()} isDismissable={false} contentClassName={styles.connectModal}>
       <div className={styles.title}>{selectConnector?.metadata.name || 'Choose Wallet'}</div>
-      <img className={styles.closeBtn} src={close} onClick={onClose}></img>
+      <img className={styles.closeBtn} src={close} onClick={() => closeModal()}></img>
       {backVisible && <img className={styles.backBtn} src={back} onClick={onBack}></img>}
 
       {!backVisible &&

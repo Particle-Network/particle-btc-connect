@@ -1649,7 +1649,7 @@
 
 "@particle-network/chains@*":
   version "1.5.7"
-  resolved "https://registry.npmmirror.com/@particle-network/chains/-/chains-1.5.7.tgz#0bc3fc0adb37405081f0b6160105280b963b5b45"
+  resolved "https://registry.yarnpkg.com/@particle-network/chains/-/chains-1.5.7.tgz#0bc3fc0adb37405081f0b6160105280b963b5b45"
   integrity sha512-oFBlm2XeALLoBMAIBxkRBtlq+2xafxTjJjlb0u5iyMXB4GFvo4AWmKcLo7REC5g6YUXPzjTa+Z7W/pkkxYGsIw==
 
 "@particle-network/wallet@^1.4.6":

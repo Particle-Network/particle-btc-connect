@@ -37,7 +37,7 @@ const personalSignMessage =
   'Hello Particle!\n\nThe First Account Abstraction Protocol on Bitcoin.\n\nhttps://particle.network';
 
 export default function Home() {
-  const { openConnectModal, disconnect } = useConnectModal();
+  const { openConnectModal, openConnectModalAsync, disconnect } = useConnectModal();
   const { accounts } = useAccounts();
   const { account, chainId, switchChain, walletClient, getFeeQuotes, sendUserOp } = useETHProvider();
   const { provider, getNetwork, switchNetwork, signMessage, getPublicKey, sendBitcoin, sendInscription } =
@@ -297,6 +297,17 @@ export default function Home() {
     }
   }, [accountContract, chainId, switchChain, accountContractList]);
 
+  const connectWallet = async () => {
+    if (openConnectModalAsync) {
+      try {
+        const accounts = await openConnectModalAsync();
+        console.log('connect success', accounts);
+      } catch (error: any) {
+        toast.error(error.message || 'connect error');
+      }
+    }
+  };
+
   return (
     <div className="container mx-auto flex h-full flex-col items-center gap-6 overflow-auto py-10">
       <Image src={particleLogo} alt="" className=""></Image>
@@ -309,7 +320,7 @@ export default function Home() {
 
       <div className="absolute right-4 top-4">
         {accounts.length === 0 && (
-          <Button color="primary" onClick={openConnectModal}>
+          <Button color="primary" onClick={connectWallet}>
             Connect
           </Button>
         )}

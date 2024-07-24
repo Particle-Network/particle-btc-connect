@@ -15,6 +15,7 @@ export const useConnector = () => {
         localStorage.setItem('current-connector-id', connector.metadata.id);
         setConnectorId(connector.metadata.id);
       }
+      return accounts;
     },
     [connectors, setConnectorId]
   );
