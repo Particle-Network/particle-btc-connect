@@ -32,9 +32,6 @@ export default function ConnectProvider({ children }: { children: React.ReactNod
         aaOptions: {
           accountContracts,
         },
-        rpcUrls: {
-          686868: 'https://testnet-rpc.merlinchain.io',
-        },
         walletOptions: {
           visible: true,
           entryPosition: EntryPosition.BR,
