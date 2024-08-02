@@ -2,7 +2,7 @@
 
 ## Setup
 
-- Replace the `xxxx` in `.env` with your Partricle project config.
+- Replace the `xxxx` in `.env` with your Particle project config.
 - Run `yarn dev`
 
 ## Document
