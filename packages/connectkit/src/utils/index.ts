@@ -56,7 +56,7 @@ export const ipfsToSrc = (ipfs: string) => {
     return ipfs || '';
   }
 
-  return `https://ipfs.particle.network/${encodeURI(ipfs.slice(7))}`;
+  return `https://ipfs.io/ipfs/${encodeURI(ipfs.slice(7))}`;
 };
 
 export const checkBTCVersion = (
