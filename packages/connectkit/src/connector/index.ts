@@ -7,4 +7,4 @@ export { TokenPocketConnector } from './tokenPocket';
 export { UnisatConnector } from './unisat';
 export { WizzConnector } from './wizz';
 export { XverseConnector } from './xverse';
-
+export { TomoConnector } from './tomo';
