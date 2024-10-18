@@ -1,6 +1,7 @@
 import { bytesToHex, publicToAddress, toBytes, toChecksumAddress, toRpcSig } from '@ethereumjs/util';
 import type { SmartAccount, UserOp } from '@particle-network/aa';
 import bitcore from 'bitcore-lib';
+import { formatUnits } from 'viem';
 import type { AccountInfo } from '../types/accountInfo';
 
 export const pubKeyToEVMAddress = (pubKey: string) => {
@@ -86,4 +87,13 @@ export const getBTCAccountInfo = async (
   }
 
   return accountInfo;
+};
+
+export const formatToken = (amount: bigint, decimals = 18) => {
+  const result = formatUnits(amount, decimals);
+  const value = parseFloat(parseFloat(result).toFixed(6));
+  if (value === 0) {
+    return '<0.000001';
+  }
+  return value;
 };

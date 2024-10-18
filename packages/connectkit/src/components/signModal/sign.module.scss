@@ -57,7 +57,7 @@
   .detailsContent {
     width: 100%;
     overflow-y: auto;
-    max-height: 0px;
+    max-height: 120px;
     transition: max-height 0.3s linear;
 
     &::-webkit-scrollbar {
@@ -72,7 +72,6 @@
       border-radius: 8px;
       border: 1px solid #252525;
       background: #232529;
-      padding: 10px;
       color: white;
       width: 100%;
       padding: 8px;
@@ -83,12 +82,62 @@
       color: #ffffffa1;
       text-align: left;
     }
+
+    .deserializeLoading {
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #252525;
+      background: #232529;
+      padding: 10px;
+      margin-top: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100px;
+      gap: 8px;
+      color: white;
+      font-size: 14px;
+
+      span {
+        &::before {
+          border: 2px solid #fff;
+        }
+      }
+    }
   }
 
   .estimatedGas {
     font-size: 12px;
     margin-top: 24px;
     color: #ffffffa1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 40px;
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid #252525;
+    background: #232529;
+    padding: 0 10px;
+    flex-shrink: 0;
+
+    span {
+      color: #ffffff;
+    }
+
+    .gasDetails {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+
+      .gasFee {
+        padding-top: 2px;
+      }
+
+      .gasless {
+        color: #52c41a;
+      }
+    }
   }
 
   .signBtn {

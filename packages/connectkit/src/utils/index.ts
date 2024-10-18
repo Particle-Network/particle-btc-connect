@@ -69,3 +69,7 @@ export const checkBTCVersion = (
   }
   return accountContracts[accountContractKey].some((item) => item.version === version);
 };
+
+export const roundToEven = (value: number) => {
+  return Math.floor(value / 2) * 2;
+};

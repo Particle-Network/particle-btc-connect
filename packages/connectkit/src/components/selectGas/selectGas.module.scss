@@ -1,0 +1,98 @@
+.selectGasContainer {
+  width: 100%;
+  height: var(--modal-height);
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #ffffff20;
+  backdrop-filter: blur(2px);
+  z-index: 100;
+
+  .selectGasContent {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    width: 100%;
+    max-height: 80%;
+    background-color: #171a1f;
+    min-height: 200px;
+    flex-direction: column;
+    border-radius: 16px 16px 0 0;
+    overflow-y: scroll;
+
+    .title {
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+      position: sticky;
+      top: 0;
+      padding: 12px 0 16px 0;
+    }
+
+    .closeBtn {
+      cursor: pointer;
+      position: absolute;
+      top: 16px;
+      right: 16px;
+    }
+
+    .feeQuotes {
+      display: flex;
+      width: 100%;
+      flex-direction: column;
+      padding: 0 24px 24px;
+      gap: 8px;
+
+      .feeQuote {
+        display: flex;
+        align-items: center;
+        height: 56px;
+        gap: 8px;
+        border-radius: 8px;
+        padding: 0 12px;
+        cursor: pointer;
+        border: #a855f7 1px solid;
+
+        .icon {
+          width: 36px;
+          height: 36px;
+        }
+
+        .feeInfo {
+          display: flex;
+          flex-direction: column;
+          align-items: start;
+          gap: 4px;
+
+          .symbol {
+            color: white;
+            font-size: 14px;
+          }
+
+          .address {
+            font-size: 12px;
+            color: #ffffffa1;
+          }
+        }
+
+        .feeBalance {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          flex-grow: 1;
+          align-items: end;
+
+          .gas {
+            font-size: 14px;
+          }
+
+          .balance {
+            font-size: 12px;
+            color: #ffffffa1;
+          }
+        }
+      }
+    }
+  }
+}

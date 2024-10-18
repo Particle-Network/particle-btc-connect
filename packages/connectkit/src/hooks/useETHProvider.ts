@@ -23,7 +23,7 @@ export const useETHProvider = () => {
       };
       smartAccount.provider.on('chainChanged', onChangeChange);
       return () => {
-        smartAccount.provider.removeListener('chainChanged', onChangeChange);
+        smartAccount.provider?.removeListener?.('chainChanged', onChangeChange);
       };
     }
   }, [smartAccount]);
@@ -90,17 +90,21 @@ export const useETHProvider = () => {
         }
       }
 
+      let userOpParams: UserOpParams | undefined = undefined;
       if (!userOpBundle) {
-        const { tx, feeQuote, tokenPaymasterAddress } = params as UserOpParams;
-        userOpBundle = await buildUserOp({ tx, feeQuote, tokenPaymasterAddress });
+        userOpParams = params as UserOpParams;
+        if (!showConfirmModal) {
+          const { tx, feeQuote, tokenPaymasterAddress } = userOpParams;
+          userOpBundle = await buildUserOp({ tx, feeQuote, tokenPaymasterAddress });
+        }
       }
 
-      if (!showConfirmModal) {
+      if (!showConfirmModal && userOpBundle) {
         return smartAccount.sendUserOperation(userOpBundle);
       }
 
       return new Promise<string>((resolve, reject) => {
-        events.emit(EventName.sendUserOp, userOpBundle);
+        events.emit(EventName.sendUserOp, userOpBundle, userOpParams);
         events.once(EventName.sendUserOpResult, ({ result, error }) => {
           if (result) {
             resolve(result);
@@ -111,6 +115,23 @@ export const useETHProvider = () => {
       });
     },
     [smartAccount, buildUserOp]
+  );
+
+  const sendTransactions = useCallback(
+    (txs: Transaction | Transaction[], forceHideConfirmModal?: boolean) => {
+      if (!smartAccount) {
+        throw new Error('The smart account is not initialized.');
+      }
+
+      const showConfirmModal = !forceHideConfirmModal && !txConfirm.isNotRemind();
+
+      if (showConfirmModal) {
+        if (getPendingSignEventAccount() > 0) {
+          throw new Error('Operation failed, there is a transaction being processed');
+        }
+      }
+    },
+    [smartAccount]
   );
 
   const publicClient = useMemo(() => {
@@ -142,6 +163,7 @@ export const useETHProvider = () => {
     getFeeQuotes,
     buildUserOp,
     sendUserOp,
+    sendTransactions,
     publicClient,
     walletClient,
   };

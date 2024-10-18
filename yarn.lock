@@ -1652,10 +1652,10 @@
   resolved "https://registry.yarnpkg.com/@particle-network/chains/-/chains-1.7.2.tgz#973f5e1ce19f9beef04171e4eb84bf7284c8b0b2"
   integrity sha512-dzYDh93V/7dd+4RCVIi0EyLQDepRTdWPIm+1hpIRrO3n29W8oVKvDzO7AlTsgYCBryh/f/iJB6JoQUB/+I8lZw==
 
-"@particle-network/wallet@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@particle-network/wallet/-/wallet-2.0.3.tgz#672200d285dba97a2bfe8f10bc7f94ec4b340369"
-  integrity sha512-qLRJB+fsyCJaefhu+TexiqXmHtONk+OjhKora/Im3uCkptC9MtL9QMF9fK66oYa6AGaoR8sP3PEbeR0/Ls7adg==
+"@particle-network/wallet@^2.0.6":
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/@particle-network/wallet/-/wallet-2.0.6.tgz#ef4b418c81c6c71ab2d1b7c0ce54770c08b34071"
+  integrity sha512-s3qNTpG6dUFVOt6wmnMFJzvsOkb/HxBEwtKSWEHrjisBkMwyu3ZFDdpyJscBKtCbpfKwhkyg3I/ZQ6rEUBE1Kw==
   dependencies:
     "@solana/web3.js" "^1.73.0"
     crypto-js "^4.1.1"

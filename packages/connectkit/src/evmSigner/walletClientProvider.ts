@@ -13,17 +13,17 @@ export class WalletClientProvider implements IEthereumProvider {
   }
 
   once(event: string, listener: any): this {
-    this.provider.once(event, listener);
+    this.provider?.once?.(event, listener);
     return this;
   }
 
   off(event: string, listener: any): this {
-    this.provider.off(event, listener);
+    this.provider?.off?.(event, listener);
     return this;
   }
 
   removeListener(event: string, listener: any): this {
-    this.provider.removeListener(event, listener);
+    this.provider?.removeListener?.(event, listener);
     return this;
   }
 

@@ -167,14 +167,18 @@ export default function Home() {
   };
 
   const { run: onSendUserOp, loading: sendUserOpLoading } = useRequest(
-    async () => {
+    async (withQuote: boolean) => {
       if (txDatas.some((tx) => !isAddress(tx.to) || !isHex(tx.data) || !isHex(tx.value))) {
         throw new Error('Params Error, To is EVM address, Data and Value are hex string.');
       }
-      const feeQuotes = await getFeeQuotes(txDatas);
-      const { userOp, userOpHash } =
-        (gasless && feeQuotes.verifyingPaymasterGasless) || feeQuotes.verifyingPaymasterNative;
-      const hash = await sendUserOp({ userOp, userOpHash }, forceHideModal);
+      if (withQuote) {
+        const feeQuotes = await getFeeQuotes(txDatas);
+        const { userOp, userOpHash } =
+          (gasless && feeQuotes.verifyingPaymasterGasless) || feeQuotes.verifyingPaymasterNative;
+        const hash = await sendUserOp({ userOp, userOpHash }, forceHideModal);
+        return hash;
+      }
+      const hash = await sendUserOp({ tx: txDatas }, forceHideModal);
       return hash;
     },
     {
@@ -512,7 +516,17 @@ export default function Home() {
         </div>
         <Button
           color="primary"
-          onClick={onSendUserOp}
+          onClick={() => onSendUserOp(true)}
+          isLoading={sendUserOpLoading}
+          className="px-10"
+          isDisabled={account == null}
+        >
+          Send With Fee Quote
+        </Button>
+
+        <Button
+          color="primary"
+          onClick={() => onSendUserOp(false)}
           isLoading={sendUserOpLoading}
           className="px-10"
           isDisabled={account == null}

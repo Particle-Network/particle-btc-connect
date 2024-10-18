@@ -1,6 +1,6 @@
 import { SmartAccount, type AAOptions, type AccountContract } from '@particle-network/aa';
 import { chains } from '@particle-network/chains';
-import { walletEntryPlugin, type WalletOption } from '@particle-network/wallet';
+import { walletEntryPlugin, type EthereumProvider, type WalletOption } from '@particle-network/wallet';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import ConnectModal from '../components/connectModal';
 import SignModal from '../components/signModal';
@@ -101,7 +101,7 @@ export const ConnectProvider = ({
   const evmSupportChainIds = useMemo(() => {
     let chainIds = options.aaOptions.accountContracts[accountContract.name]
       ?.filter((item) => item.version === accountContract.version)
-      .map((item) => item.chainIds)
+      .map((item) => item.chainIds!)
       .reduce((a, b) => {
         a.push(...b);
         return a;
@@ -303,7 +303,7 @@ export const ConnectProvider = ({
   useEffect(() => {
     if (smartAccount && options.walletOptions?.visible !== false) {
       walletEntryPlugin.setWalletCore({
-        ethereum: smartAccount.provider,
+        ethereum: smartAccount.provider as EthereumProvider,
       });
       console.log('walletEntryPlugin setWalletCore');
     }
