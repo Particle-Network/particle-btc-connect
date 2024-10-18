@@ -89,8 +89,10 @@ const SelectGas = ({ feeQuotesResponse, onSelectedFeeQuote, selectedFeeQuote, is
       }}
     >
       <div className={styles.selectGasContent}>
-        <div className={styles.title}>Network Fee</div>
-        <img className={styles.closeBtn} src={close} onClick={onClose}></img>
+        <div className={styles.title}>
+          Network Fee
+          <img className={styles.closeBtn} src={close} onClick={onClose}></img>
+        </div>
 
         <div className={styles.feeQuotes}>
           {feeQuotes.map((item, index) => {

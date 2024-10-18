@@ -28,13 +28,16 @@
       position: sticky;
       top: 0;
       padding: 12px 0 16px 0;
-    }
+      background-color: #171a1f;
 
-    .closeBtn {
-      cursor: pointer;
-      position: absolute;
-      top: 16px;
-      right: 16px;
+      .closeBtn {
+        cursor: pointer;
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        height: 24px;
+        width: 24px;
+      }
     }
 
     .feeQuotes {
@@ -57,6 +60,7 @@
         .icon {
           width: 36px;
           height: 36px;
+          border-radius: 100%;
         }
 
         .feeInfo {
