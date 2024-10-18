@@ -278,22 +278,54 @@ const SignModal = ({ open, onClose, onOpen }: { open: boolean; onClose: () => vo
     if (!deserializeResult) {
       setDeserializeLoading(true);
     }
-    const feeQuotes = await smartAccount.getFeeQuotes(userOpParams.tx);
-    setFeeQuotesResponse(feeQuotes);
-    if (!userOpBundle) {
-      // By default, native is used to pay gas
-      setUserOpBundle({
-        userOp: feeQuotes.verifyingPaymasterNative.userOp,
-        userOpHash: feeQuotes.verifyingPaymasterNative.userOpHash,
+    try {
+      const feeQuotes = await smartAccount.getFeeQuotes(userOpParams.tx);
+      setFeeQuotesResponse(feeQuotes);
+      if (!userOpBundle) {
+        const gasless = Boolean(feeQuotes.verifyingPaymasterGasless);
+        const { userOp, userOpHash } = feeQuotes.verifyingPaymasterGasless || feeQuotes.verifyingPaymasterNative;
+
+        if (
+          !gasless &&
+          BigInt(feeQuotes.verifyingPaymasterNative.feeQuote!.balance) <
+            BigInt(feeQuotes.verifyingPaymasterNative.feeQuote!.fee)
+        ) {
+          const feeQuote = feeQuotes.tokenPaymaster?.feeQuotes.find((item) => BigInt(item.balance) >= BigInt(item.fee));
+          if (feeQuote && feeQuotes.tokenPaymaster?.tokenPaymasterAddress) {
+            const opBundle = await createUserOp({
+              tx: userOpParams.tx,
+              feeQuote,
+              tokenPaymasterAddress: feeQuotes.tokenPaymaster.tokenPaymasterAddress,
+            });
+            setUserOpBundle(opBundle);
+            setSelectedFeeQuote({
+              userOpBundle: opBundle,
+              feeQuote,
+              gasless,
+            });
+            return;
+          }
+        }
+
+        setUserOpBundle({
+          userOp,
+          userOpHash,
+        });
+        setSelectedFeeQuote({
+          userOpBundle: {
+            userOp,
+            userOpHash,
+          },
+          feeQuote: gasless ? undefined : feeQuotes.verifyingPaymasterNative.feeQuote,
+          gasless,
+        });
+      }
+    } catch (error) {
+      console.log('🚀 ~ loadFeeQuotes ~ error:', error);
+      events.emit(EventName.sendUserOpResult, {
+        error,
       });
-      setSelectedFeeQuote({
-        userOpBundle: {
-          userOp: feeQuotes.verifyingPaymasterNative.userOp,
-          userOpHash: feeQuotes.verifyingPaymasterNative.userOpHash,
-        },
-        feeQuote: feeQuotes.verifyingPaymasterNative.feeQuote,
-        gasless: false,
-      });
+      onClose();
     }
   };
 
