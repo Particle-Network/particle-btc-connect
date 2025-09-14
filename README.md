@@ -20,4 +20,4 @@ BTC Connect takes advantage of the ERC-4337 design and L2 EVM-compatible chains 
 ## Learn More
 
 - [Website](https://particle.network)
-- [Documentation](https://docs.particle.network/developers/btc-connect)
+- [Documentation](https://developers.particle.network/intro/tutorials-and-demos/repositories#btc-connect)
